@@ -18,8 +18,8 @@ win:
     - target: portable
       arch: [x64]
   icon: build/icon.ico
-  artifactName: ${productName}-${version}-${arch}.${ext}
 nsis:
+  artifactName: deadsimpleapi-setup.${ext}
   oneClick: false
   perMachine: false
   allowToChangeInstallationDirectory: true
@@ -27,4 +27,4 @@ nsis:
   createStartMenuShortcut: true
   shortcutName: Deadsimple
 portable:
-  artifactName: ${productName}-${version}-portable.${ext}
+  artifactName: deadsimpleapi.${ext}

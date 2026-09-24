@@ -20,8 +20,8 @@ Everything is stored as plain JSON files on your own machine (`%APPDATA%\Deadsim
 
 Grab the latest `.exe` from the [Releases page](https://github.com/detib/deadsimpleapi/releases/latest):
 
-- `Deadsimple-x.y.z-x64.exe`: installer
-- `Deadsimple-x.y.z-portable.exe`: runs without installing
+- `deadsimpleapi.exe`: runs without installing
+- `deadsimpleapi-setup.exe`: installer
 
 The app isn't code-signed, so Windows SmartScreen may warn on first launch. Click **More info → Run anyway**.
 

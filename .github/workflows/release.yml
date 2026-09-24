@@ -44,7 +44,7 @@ jobs:
         run: |
           version="${GITHUB_REF_NAME#v}"
           gh release create "$GITHUB_REF_NAME" \
-            "release/Deadsimple-$version-x64.exe" \
-            "release/Deadsimple-$version-portable.exe" \
+            release/deadsimpleapi.exe \
+            release/deadsimpleapi-setup.exe \
             --title "Deadsimple $version" \
             --generate-notes
