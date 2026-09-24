@@ -1,0 +1,50 @@
+name: Release
+
+# Push a tag like v1.0.1 to build the Windows installers and publish them as a
+# GitHub release. The tag must match "version" in package.json.
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # No npm cache: this job produces the exe people download, so it always
+      # installs from the lockfile instead of trusting a restored cache.
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 20
+
+      - name: Check tag matches package.json version
+        shell: bash
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match package.json version $version"
+            exit 1
+          fi
+
+      - run: npm ci
+
+      - run: npm run typecheck
+
+      - run: npm run dist
+
+      - name: Publish release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          gh release create "$GITHUB_REF_NAME" \
+            "release/Deadsimple-$version-x64.exe" \
+            "release/Deadsimple-$version-portable.exe" \
+            --title "Deadsimple $version" \
+            --generate-notes
