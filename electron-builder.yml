@@ -1,0 +1,30 @@
+appId: dev.deadsimple.client
+productName: Deadsimple
+copyright: Deadsimple
+directories:
+  output: release
+  buildResources: build
+files:
+  - dist/**/*
+  - dist-electron/**/*
+  - package.json
+  - "!**/*.map"
+asar: true
+compression: maximum
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+  icon: build/icon.ico
+  artifactName: ${productName}-${version}-${arch}.${ext}
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Deadsimple
+portable:
+  artifactName: ${productName}-${version}-portable.${ext}

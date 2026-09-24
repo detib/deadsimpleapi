@@ -1,0 +1,451 @@
+/* ------------------------------------------------------------------ */
+/* App shell: title rail, three-column workbench, status rail.         */
+/* Panel-internal styling lives with each panel's own component.       */
+/* ------------------------------------------------------------------ */
+
+.app {
+  display: grid;
+  grid-template-rows: var(--h-titlebar) minmax(0, 1fr) var(--h-statusbar);
+  height: 100vh;
+  overflow: hidden;
+  background: var(--chassis);
+  color: var(--bone);
+  font-family: var(--font-ui);
+  font-size: calc(13px * var(--ui-scale, 1));
+}
+
+/* ---------------------------- title rail --------------------------- */
+
+.titlebar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding-left: var(--sp-3);
+  background: var(--chassis-2);
+  -webkit-app-region: drag;
+  user-select: none;
+}
+
+.titlebar > * {
+  -webkit-app-region: no-drag;
+}
+
+.titlebar-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--font-plate);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--mute);
+  -webkit-app-region: drag;
+}
+
+.titlebar-mark {
+  width: 12px;
+  height: 12px;
+  flex: none;
+  color: var(--signal);
+}
+
+/* The drag region has to be a real element, not a gap, or the window
+   cannot be moved by its empty middle. */
+.titlebar-drag {
+  flex: 1;
+  align-self: stretch;
+  -webkit-app-region: drag;
+  min-width: var(--sp-4);
+}
+
+.titlebar-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-right: var(--sp-1);
+}
+
+.window-controls {
+  display: flex;
+  align-self: stretch;
+}
+
+.window-btn {
+  width: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--mute);
+  cursor: pointer;
+  transition: background 90ms linear, color 90ms linear;
+}
+
+.window-btn:hover {
+  background: var(--rail-hi);
+  color: var(--bone);
+}
+
+.window-btn.is-close:hover {
+  background: var(--rust);
+  color: #ffffff;
+}
+
+/* ---------------------------- workbench ---------------------------- */
+
+.workbench {
+  display: flex;
+  min-height: 0;
+  min-width: 0;
+}
+
+.pane-sidebar {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--well);
+  border-right: 1px solid var(--edge);
+}
+
+.pane-center {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background: var(--chassis);
+}
+
+.pane-response {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background: var(--chassis);
+  border-left: 1px solid var(--edge);
+}
+
+/* When the window is narrow the response panel stacks under the request
+   editor instead of squeezing both into uselessness. */
+.workbench.is-stacked {
+  flex-direction: column;
+}
+
+.workbench.is-stacked .pane-center,
+.workbench.is-stacked .pane-response {
+  flex: 1 1 0;
+  border-left: 0;
+}
+
+.workbench.is-stacked .pane-response {
+  border-top: 1px solid var(--edge);
+}
+
+/* ---------------------------- resizers ----------------------------- */
+
+.pane-resizer {
+  flex: none;
+  width: 5px;
+  margin: 0 -2px;
+  z-index: 5;
+  cursor: col-resize;
+  background: transparent;
+  position: relative;
+  -webkit-app-region: no-drag;
+}
+
+.pane-resizer::after {
+  content: '';
+  position: absolute;
+  inset: 0 2px;
+  background: transparent;
+  transition: background 110ms linear;
+}
+
+.pane-resizer:hover::after,
+.pane-resizer.is-active::after {
+  background: var(--signal);
+}
+
+.pane-resizer:focus-visible {
+  outline: none;
+}
+
+.pane-resizer:focus-visible::after {
+  background: var(--signal);
+}
+
+/* ---------------------------- panel chrome ------------------------- */
+
+.panel-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  height: var(--h-bar);
+  flex: none;
+  padding: 0 var(--sp-2) 0 var(--sp-3);
+  border-bottom: 1px solid var(--edge);
+  background: var(--chassis-2);
+}
+
+.panel-title {
+  font-family: var(--font-plate);
+  font-weight: 600;
+  font-size: 10.5px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--mute);
+  white-space: nowrap;
+}
+
+.panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------------------------- status rail -------------------------- */
+
+.statusbar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 0 var(--sp-3);
+  background: var(--chassis-2);
+  border-top: 1px solid var(--edge);
+  font-family: var(--font-data);
+  font-size: 10.5px;
+  color: var(--faint);
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.statusbar-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.statusbar-spacer {
+  flex: 1;
+}
+
+.statusbar button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+.statusbar button:hover {
+  color: var(--bone);
+}
+
+/* ---------------------------- toasts ------------------------------- */
+
+.toast-stack {
+  position: fixed;
+  right: var(--sp-4);
+  bottom: calc(var(--h-statusbar) + var(--sp-4));
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  z-index: 60;
+  max-width: 420px;
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  display: flex;
+  gap: var(--sp-2);
+  align-items: flex-start;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--rail);
+  border: 1px solid var(--edge);
+  border-left: 2px solid var(--mute);
+  border-radius: var(--r-md);
+  animation: toast-in 140ms ease-out;
+}
+
+.toast.is-success { border-left-color: var(--jade); }
+.toast.is-error { border-left-color: var(--rust); }
+.toast.is-info { border-left-color: var(--trace); }
+
+.toast-text {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.toast-detail {
+  margin-top: 2px;
+  font-family: var(--font-data);
+  font-size: 10.5px;
+  color: var(--faint);
+  word-break: break-word;
+  max-height: 4.5em;
+  overflow: hidden;
+}
+
+.toast-close {
+  margin-left: auto;
+  border: 0;
+  background: transparent;
+  color: var(--faint);
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 2px;
+}
+
+.toast-close:hover { color: var(--bone); }
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---------------------------- modal shell -------------------------- */
+
+.modal-scrim {
+  position: fixed;
+  inset: 0;
+  background: var(--scrim);
+  display: grid;
+  place-items: center;
+  z-index: 50;
+  animation: fade-in 100ms ease-out;
+}
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  min-width: 480px;
+  max-width: min(920px, 92vw);
+  max-height: 84vh;
+  background: var(--chassis);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-modal);
+  overflow: hidden;
+}
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--edge);
+  background: var(--chassis-2);
+}
+
+.modal-head h2 {
+  margin: 0;
+  font-family: var(--font-plate);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--bone);
+}
+
+.modal-body {
+  padding: var(--sp-4);
+  overflow: auto;
+  min-height: 0;
+}
+
+.modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
+  border-top: 1px solid var(--edge);
+  background: var(--chassis-2);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ---------------------------- boot state --------------------------- */
+
+.boot {
+  display: grid;
+  place-items: center;
+  height: 100vh;
+  background: var(--chassis);
+  color: var(--faint);
+  font-family: var(--font-plate);
+  font-size: 11px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* ---------------------------------------------------------------- */
+/* Auto-hiding sidebar                                               */
+/*                                                                   */
+/* Collapsed, the panel leaves a narrow rail behind and slides back   */
+/* over the workbench on hover. The reveal is pure CSS so it cannot   */
+/* fall out of step with the pointer, and :focus-within means tabbing */
+/* into the tree opens it too.                                        */
+/* ---------------------------------------------------------------- */
+
+.titlebar-toggle {
+  margin-right: calc(var(--sp-1) * -1);
+}
+
+.sidebar-rail {
+  flex: none;
+  width: 12px;
+  align-self: stretch;
+  display: grid;
+  place-items: center;
+  background: var(--chassis-2);
+  border-right: 1px solid var(--edge);
+  cursor: pointer;
+}
+
+.sidebar-rail-grip {
+  width: 2px;
+  height: 26px;
+  border-radius: 1px;
+  background: var(--edge);
+  transition: background var(--dur-2) var(--ease);
+}
+
+.sidebar-rail:hover .sidebar-rail-grip {
+  background: var(--signal);
+}
+
+.workbench.is-sidebar-collapsed .pane-sidebar {
+  position: absolute;
+  top: var(--h-titlebar);
+  bottom: var(--h-statusbar);
+  left: 12px;
+  z-index: var(--z-dropdown);
+  transform: translateX(calc(-100% - 13px));
+  transition: transform var(--dur-2) var(--ease);
+  box-shadow: var(--shadow-modal);
+}
+
+.workbench.is-sidebar-collapsed .sidebar-rail:hover ~ .pane-sidebar,
+.workbench.is-sidebar-collapsed .pane-sidebar:hover,
+.workbench.is-sidebar-collapsed .pane-sidebar:focus-within {
+  transform: translateX(0);
+}
+
+/* Stacked layout drops the absolute positioning: there is no room to
+   overlay a panel when the response is already below the editor. */
+.workbench.is-stacked.is-sidebar-collapsed .pane-sidebar {
+  position: static;
+  transform: none;
+  box-shadow: none;
+}

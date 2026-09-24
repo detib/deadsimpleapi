@@ -1,0 +1,979 @@
+/* ==================================================================== */
+/* Primitives. Reusable parts only - no panel layout lives here.        */
+/* Load after base.css. Everything is single-class where it can be, so  */
+/* panel stylesheets override without fighting specificity.             */
+/* ==================================================================== */
+
+/* -------------------------------------------------------------------- */
+/* Buttons                                                               */
+/* -------------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  flex: none;
+  height: var(--h-input);
+  padding: 0 var(--sp-3);
+  background: var(--rail);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-md);
+  color: var(--bone);
+  font-family: var(--font-ui);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+  transition:
+    background var(--dur-1) var(--ease),
+    border-color var(--dur-1) var(--ease),
+    color var(--dur-1) var(--ease);
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--rail-hi);
+  border-color: var(--faint);
+}
+
+.btn:active:not(:disabled) {
+  background: var(--rail);
+  border-color: var(--faint);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--signal-solid);
+  border-color: var(--signal-solid);
+  color: var(--on-signal);
+  font-weight: 600;
+}
+
+.btn-primary:hover:not(:disabled),
+.btn-primary:active:not(:disabled) {
+  background: var(--signal-hi);
+  border-color: var(--signal-hi);
+}
+
+/* A signal ring on a signal fill is unreadable; bone reads on both. */
+.btn-primary:focus-visible {
+  outline-color: var(--bone);
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--mute);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--rail);
+  border-color: transparent;
+  color: var(--bone);
+}
+
+.btn-ghost:active:not(:disabled) {
+  background: var(--rail-hi);
+  border-color: transparent;
+}
+
+.btn-danger {
+  background: transparent;
+  color: var(--rust);
+}
+
+.btn-danger:hover:not(:disabled),
+.btn-danger:active:not(:disabled) {
+  background: var(--rust-wash);
+  border-color: var(--rust);
+}
+
+.btn-icon {
+  width: var(--h-icon);
+  height: var(--h-icon);
+  padding: 0;
+  gap: 0;
+}
+
+/* -------------------------------------------------------------------- */
+/* Text inputs                                                           */
+/* -------------------------------------------------------------------- */
+
+.input,
+.textarea,
+.select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  background: transparent;
+  border: 1px solid var(--edge);
+  border-radius: var(--r-md);
+  color: var(--bone);
+  font-family: var(--font-data);
+  font-size: var(--fs-data);
+  transition:
+    border-color var(--dur-1) var(--ease),
+    background var(--dur-1) var(--ease);
+}
+
+.input,
+.select {
+  height: var(--h-input);
+  padding: 0 var(--sp-2);
+  line-height: calc(var(--h-input) - 2px);
+}
+
+.textarea {
+  min-height: 72px;
+  padding: var(--sp-2);
+  line-height: var(--lh-data);
+  resize: vertical;
+}
+
+.input:hover:not(:disabled),
+.textarea:hover:not(:disabled),
+.select:hover:not(:disabled) {
+  border-color: var(--faint);
+}
+
+/* The ring hugs the field instead of haloing it: a 1px inset outline on
+   top of the border reads as a 2px signal edge with no glow. */
+.input:focus-visible,
+.textarea:focus-visible,
+.select:focus-visible {
+  border-color: var(--signal);
+  outline: 1px solid var(--signal);
+  outline-offset: -1px;
+}
+
+.input:disabled,
+.textarea:disabled,
+.select:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.input-invalid {
+  border-color: var(--rust);
+}
+
+.select {
+  appearance: none;
+  padding-right: var(--sp-6);
+  background-image: var(--caret);
+  background-repeat: no-repeat;
+  background-position: right var(--sp-2) center;
+  cursor: pointer;
+}
+
+/* The native popup is drawn by the OS and does not inherit. */
+.select option {
+  background: var(--chassis-2);
+  color: var(--bone);
+}
+
+/* -------------------------------------------------------------------- */
+/* Checkbox and switch                                                   */
+/* -------------------------------------------------------------------- */
+
+.checkbox {
+  appearance: none;
+  flex: none;
+  display: inline-grid;
+  place-content: center;
+  width: 14px;
+  height: 14px;
+  background: var(--rail);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition:
+    background var(--dur-1) var(--ease),
+    border-color var(--dur-1) var(--ease);
+}
+
+.checkbox::after {
+  content: '';
+  width: 7px;
+  height: 4px;
+  border-left: 1.5px solid var(--on-signal);
+  border-bottom: 1.5px solid var(--on-signal);
+  transform: translateY(-1px) rotate(-45deg);
+  opacity: 0;
+}
+
+.checkbox:hover:not(:disabled) {
+  border-color: var(--faint);
+}
+
+.checkbox:checked,
+.checkbox:indeterminate {
+  background: var(--signal-solid);
+  border-color: var(--signal-solid);
+}
+
+.checkbox:checked::after {
+  opacity: 1;
+}
+
+.checkbox:indeterminate::after {
+  width: 8px;
+  height: 0;
+  border-left: 0;
+  border-bottom-width: 2px;
+  transform: none;
+  opacity: 1;
+}
+
+.checkbox:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.switch {
+  appearance: none;
+  position: relative;
+  flex: none;
+  width: 26px;
+  height: 14px;
+  background: var(--rail);
+  border: 1px solid var(--edge);
+  border-radius: 7px;
+  cursor: pointer;
+  transition:
+    background var(--dur-1) var(--ease),
+    border-color var(--dur-1) var(--ease);
+}
+
+.switch::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--faint);
+  transition:
+    transform var(--dur-1) var(--ease),
+    background var(--dur-1) var(--ease);
+}
+
+.switch:hover:not(:disabled) {
+  border-color: var(--faint);
+}
+
+.switch:checked {
+  background: var(--signal-solid);
+  border-color: var(--signal-solid);
+}
+
+.switch:checked:hover:not(:disabled) {
+  background: var(--signal-hi);
+  border-color: var(--signal-hi);
+}
+
+.switch:checked::after {
+  transform: translateX(12px);
+  background: var(--on-signal);
+}
+
+.switch:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* -------------------------------------------------------------------- */
+/* Tabs                                                                  */
+/* -------------------------------------------------------------------- */
+
+.tabs {
+  display: flex;
+  align-items: stretch;
+  min-height: var(--h-bar);
+  border-bottom: 1px solid var(--edge);
+}
+
+.tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: none;
+  min-height: var(--h-bar);
+  padding: 0 var(--sp-3);
+  background: transparent;
+  border: 0;
+  /* Reserved so selecting a tab never shifts the strip. */
+  border-bottom: 2px solid transparent;
+  color: var(--mute);
+  font-family: var(--font-plate);
+  font-size: var(--fs-plate);
+  font-weight: 600;
+  letter-spacing: var(--ls-plate);
+  text-transform: none;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+  transition:
+    color var(--dur-1) var(--ease),
+    border-color var(--dur-1) var(--ease);
+}
+
+.tab:hover:not(:disabled) {
+  color: var(--bone);
+}
+
+.tab[aria-selected='true'],
+.tab[data-active='true'] {
+  color: var(--bone);
+  border-bottom-color: var(--signal);
+}
+
+.tab:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Keep the ring inside the strip so it never overlaps a neighbour. */
+.tab:focus-visible {
+  outline-offset: -2px;
+}
+
+/* -------------------------------------------------------------------- */
+/* Chips, badges, keys                                                   */
+/* -------------------------------------------------------------------- */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  flex: none;
+  /* min-height + padding rather than a fixed height: at uiScale 1.6 the
+     11px label is 17.6px and would spill out of an 18px pill. */
+  min-height: 18px;
+  padding: 2px 6px;
+  background: var(--rail);
+  border: 0;
+  /* Clamped to half the box, so it stays a pill at any scaled height. */
+  border-radius: 999px;
+  color: var(--mute);
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.chip-var {
+  background: var(--violet-wash);
+  border-color: color-mix(in srgb, var(--violet) 34%, transparent);
+  color: var(--violet);
+}
+
+.chip-signal {
+  background: var(--signal-wash);
+  border-color: color-mix(in srgb, var(--signal) 34%, transparent);
+  color: var(--signal);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  min-height: 16px;
+  padding: 0 2px;
+  background: transparent;
+  color: var(--mute);
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* The doubled bottom border is the keycap; the app has no shadows. */
+.kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  min-width: 17px;
+  min-height: 17px;
+  padding: 2px 4px;
+  background: var(--rail);
+  border: 1px solid var(--edge);
+  border-bottom-width: 2px;
+  border-radius: var(--r-sm);
+  color: var(--mute);
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* -------------------------------------------------------------------- */
+/* Type utilities                                                        */
+/* -------------------------------------------------------------------- */
+
+/* The silkscreen. Panel titles, tab labels, table headers, eyebrows. */
+.plate {
+  font-family: var(--font-plate);
+  font-size: var(--fs-plate);
+  font-weight: 500;
+  letter-spacing: var(--ls-plate);
+  line-height: var(--lh-tight);
+  color: var(--mute);
+}
+
+.plate-lg {
+  font-size: var(--fs-plate-lg);
+}
+
+.mono {
+  font-family: var(--font-data);
+  font-size: var(--fs-data);
+  font-variant-numeric: tabular-nums;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.hairline {
+  flex: none;
+  block-size: 1px;
+  inline-size: 100%;
+  background: var(--edge-soft);
+  border: 0;
+}
+
+.hairline[data-axis='y'] {
+  block-size: auto;
+  inline-size: 1px;
+  align-self: stretch;
+}
+
+/* -------------------------------------------------------------------- */
+/* Empty state and spinner                                               */
+/* -------------------------------------------------------------------- */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: 120px;
+  padding: var(--sp-8) var(--sp-5);
+  text-align: center;
+  color: var(--faint);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-ui);
+  user-select: none;
+}
+
+.spinner {
+  display: inline-block;
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid var(--edge);
+  border-top-color: var(--signal);
+  border-radius: 50%;
+  animation: ds-spin 620ms linear infinite;
+}
+
+@keyframes ds-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* A static ring with one lit arc still reads as busy. */
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}
+
+/* -------------------------------------------------------------------- */
+/* Tooltip                                                               */
+/*                                                                       */
+/* Text comes from data-tip, side from data-tip-pos (default: bottom).    */
+/* No library, no portal - it is a pseudo-element on the trigger.         */
+/* -------------------------------------------------------------------- */
+
+.tooltip {
+  position: relative;
+}
+
+.tooltip[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  z-index: var(--z-tooltip);
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px 6px;
+  background: var(--chassis-2);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-sm);
+  color: var(--bone);
+  font-family: var(--font-ui);
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.4;
+  /* The trigger is often .plate or .tab, which uppercase their children. */
+  text-transform: none;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--dur-1) var(--ease);
+}
+
+.tooltip[data-tip]:hover::after,
+.tooltip[data-tip]:focus-visible::after {
+  opacity: 1;
+  visibility: visible;
+  /* A delay, not motion: it survives prefers-reduced-motion on purpose. */
+  transition-delay: 260ms;
+}
+
+.tooltip[data-tip-pos='top']::after {
+  top: auto;
+  bottom: calc(100% + 6px);
+}
+
+.tooltip[data-tip-pos='right']::after {
+  top: 50%;
+  bottom: auto;
+  left: calc(100% + 6px);
+  transform: translateY(-50%);
+}
+
+.tooltip[data-tip-pos='left']::after {
+  top: 50%;
+  bottom: auto;
+  left: auto;
+  right: calc(100% + 6px);
+  transform: translateY(-50%);
+}
+
+/* -------------------------------------------------------------------- */
+/* Menus                                                                 */
+/* -------------------------------------------------------------------- */
+
+/* Menus are portalled to <body> and given viewport coordinates as inline
+   left/top, so the primitive has to be positioned or those offsets are
+   dropped and the menu lands in body flow. Anchor it elsewhere by overriding
+   position, not by adding one. */
+.menu {
+  position: fixed;
+  min-width: 176px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: var(--sp-1) 0;
+  background: var(--chassis-2);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-lg);
+  z-index: var(--z-menu);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  min-height: var(--h-icon);
+  padding: 3px var(--sp-3);
+  background: transparent;
+  border: 0;
+  color: var(--bone);
+  font-family: var(--font-ui);
+  font-size: var(--fs-sm);
+  text-align: left;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+  transition: background var(--dur-1) var(--ease);
+}
+
+/* .is-active is the keyboard cursor; the menu owns it while the pointer is
+   idle, so it must read the same as hover. */
+.menu-item:hover:not(:disabled),
+.menu-item.is-active,
+.menu-item[data-highlighted='true'] {
+  background: var(--rail-hi);
+}
+
+/* Fixed gutter so labels line up whether or not an item has a glyph. */
+.menu-item-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 13px;
+  color: var(--mute);
+}
+
+.menu-item-danger .menu-item-icon {
+  color: inherit;
+}
+
+.menu-item:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.menu-item:focus-visible {
+  outline-offset: -2px;
+}
+
+.menu-item-danger {
+  color: var(--rust);
+}
+
+.menu-item-danger:hover:not(:disabled),
+.menu-item-danger.is-active,
+.menu-item-danger[data-highlighted='true'] {
+  background: var(--rust-wash);
+}
+
+/* Shortcut hint, pushed to the trailing edge of a .menu-item. */
+.menu-key {
+  margin-left: auto;
+  padding-left: var(--sp-4);
+  color: var(--faint);
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+}
+
+.menu-sep {
+  height: 1px;
+  margin: var(--sp-1) 0;
+  background: var(--edge-soft);
+}
+
+/* A section eyebrow when it sits directly in the menu. */
+.menu-label {
+  padding: var(--sp-2) var(--sp-3) var(--sp-1);
+  color: var(--faint);
+  font-family: var(--font-plate);
+  font-size: var(--fs-plate);
+  font-weight: 600;
+  letter-spacing: var(--ls-plate);
+  text-transform: none;
+}
+
+/* The same class also carries an item's own text, where none of the
+   silkscreen treatment applies - it is body copy that has to elide. */
+.menu-item .menu-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+/* -------------------------------------------------------------------- */
+/* Scroll and resize helpers                                             */
+/* -------------------------------------------------------------------- */
+
+/* min-size:0 is the flex-child fix: without it a scroller inside a flex
+   column grows to its content instead of scrolling. */
+.scroll-y {
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  overscroll-behavior: contain;
+}
+
+.scroll-x {
+  overflow-x: auto;
+  overflow-y: hidden;
+  min-width: 0;
+  overscroll-behavior-x: contain;
+}
+
+.resizer {
+  position: relative;
+  flex: none;
+  width: 4px;
+  align-self: stretch;
+  background: transparent;
+  cursor: col-resize;
+  touch-action: none;
+  z-index: var(--z-resizer);
+}
+
+.resizer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+  background: transparent;
+  transition: background var(--dur-1) var(--ease);
+}
+
+.resizer:hover::after,
+.resizer:focus-visible::after,
+.resizer[data-dragging='true']::after {
+  background: var(--signal);
+}
+
+.resizer:focus-visible {
+  outline-offset: -1px;
+}
+
+.resizer[data-axis='y'] {
+  width: auto;
+  height: 4px;
+  cursor: row-resize;
+}
+
+.resizer[data-axis='y']::after {
+  top: 50%;
+  bottom: auto;
+  left: 0;
+  right: 0;
+  width: auto;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
+/* -------------------------------------------------------------------- */
+/* Dense key/value table                                                 */
+/* -------------------------------------------------------------------- */
+
+.table-lite {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-data);
+  font-size: var(--fs-data);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--lh-data);
+}
+
+.table-lite th {
+  height: var(--h-row);
+  padding: 0 var(--sp-2);
+  background: var(--chassis-2);
+  border-bottom: 1px solid var(--edge);
+  color: var(--mute);
+  font-family: var(--font-plate);
+  font-size: var(--fs-plate);
+  font-weight: 600;
+  letter-spacing: var(--ls-plate);
+  text-align: left;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.table-lite td {
+  padding: var(--sp-1) var(--sp-2);
+  border-bottom: 1px solid var(--edge-soft);
+  color: var(--bone);
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+/* Key column: quieter and never wrapped. */
+.table-lite td:first-child {
+  color: var(--mute);
+  white-space: nowrap;
+}
+
+.table-lite tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.table-lite tbody tr:hover td {
+  background: var(--rail);
+}
+
+/* -------------------------------------------------------------------- */
+/* Status and method colours                                             */
+/* -------------------------------------------------------------------- */
+
+.st-info {
+  color: var(--status-info);
+}
+
+.st-success {
+  color: var(--status-success);
+}
+
+.st-redirect {
+  color: var(--status-redirect);
+}
+
+.st-client-error {
+  color: var(--status-client-error);
+}
+
+.st-server-error {
+  color: var(--status-server-error);
+}
+
+/* -------------------------------------------------------------------- */
+/* Waveform - the segmented latency bar                                  */
+/*                                                                       */
+/* Segments have a zero basis and are sized by the flex-grow the          */
+/* component writes inline, so the bar is a to-scale timing readout.      */
+/* -------------------------------------------------------------------- */
+
+.waveform {
+  display: flex;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--edge-soft);
+}
+
+.waveform-lg {
+  height: 8px;
+  border-radius: var(--r-sm);
+}
+
+.waveform-seg {
+  flex: 0 1 0%;
+  /* A phase that really happened is never invisible. */
+  min-width: 1px;
+  background: var(--faint);
+}
+
+.waveform-seg[data-phase='dns'] {
+  background: var(--phase-dns);
+}
+
+.waveform-seg[data-phase='tcp'] {
+  background: var(--phase-tcp);
+}
+
+.waveform-seg[data-phase='tls'] {
+  background: var(--phase-tls);
+}
+
+.waveform-seg[data-phase='wait'] {
+  background: var(--phase-wait);
+}
+
+.waveform-seg[data-phase='download'] {
+  background: var(--phase-download);
+}
+
+/* ---------------------------------------------------------------- */
+/* HTTP method badges                                                */
+/* ---------------------------------------------------------------- */
+
+.m-get {
+  --m: var(--method-get);
+  color: var(--m);
+}
+
+.m-post {
+  --m: var(--method-post);
+  color: var(--m);
+}
+
+.m-put {
+  --m: var(--method-put);
+  color: var(--m);
+}
+
+.m-patch {
+  --m: var(--method-patch);
+  color: var(--m);
+}
+
+.m-delete {
+  --m: var(--method-delete);
+  color: var(--m);
+}
+
+.m-head {
+  --m: var(--method-head);
+  color: var(--m);
+}
+
+.m-options {
+  --m: var(--method-options);
+  color: var(--m);
+}
+
+.m-trace {
+  --m: var(--method-trace);
+  color: var(--m);
+}
+
+.m-query {
+  --m: var(--method-query);
+  color: var(--m);
+}
+
+.m-other {
+  --m: var(--method-other);
+  color: var(--m);
+}
+
+/* On a dark ground the tint lightens the badge instead of darkening it, so
+   the label is lifted away from it rather than pushed down. */
+[data-theme='dark'] .method-badge {
+  background: color-mix(in srgb, var(--m, var(--mute)) 15%, transparent);
+  color: color-mix(in srgb, var(--m, var(--mute)) 88%, #FFFFFF);
+}
+
+/* A filled chip rather than coloured text: the verb is the first thing you
+   scan for in a tree of a hundred requests, and a badge is findable at a
+   glance where a tinted word is not. Fixed min-width keeps the labels in a
+   column so the names beside them still line up. */
+.method-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  min-width: 46px;
+  padding: 2px 5px;
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--m, var(--mute)) 18%, transparent);
+  /* Mixed here rather than in a token: --m is set on this element, and a
+     custom property declared on :root would resolve --m against :root and
+     fall back to grey for every method. Darkening buys back the contrast
+     the tinted background costs. */
+  color: color-mix(in srgb, var(--m, var(--mute)) 84%, #000000);
+  font-family: var(--font-data);
+  font-size: calc(10px * var(--ui-scale));
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.method-badge.is-sm {
+  /* Wide enough for OPTIONS, the longest standard verb, so the request
+     names beside the badges stay in one column. */
+  min-width: 54px;
+  font-size: calc(9.5px * var(--ui-scale));
+}

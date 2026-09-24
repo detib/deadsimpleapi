@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' ws://localhost:5199 http://localhost:5199; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>Deadsimple</title>
+    <style>
+      /* Paint the chassis colour before any CSS loads so there is no white flash. */
+      html { background: #e5e5e1; }
+      html[data-theme='dark'] { background: #1c1e21; }
+      #root { height: 100vh; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>

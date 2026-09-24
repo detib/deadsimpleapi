@@ -1,0 +1,499 @@
+/* ------------------------------------------------------------------ */
+/* Left panel: the collections tree and the call history.              */
+/*                                                                     */
+/* The tree is a recessed well with a silkscreened ladder behind it -   */
+/* one hairline rung per depth - so nesting is readable without any     */
+/* row-level indentation that would break full-width hover bands.       */
+/* ------------------------------------------------------------------ */
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* ---------------------------- header bar --------------------------- */
+
+.panel-bar.sidebar-bar {
+  gap: 0;
+  padding: 0 var(--sp-1) 0 0;
+}
+
+.sb-tab {
+  padding: 0 var(--sp-2);
+}
+
+.sb-bar-spacer {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ---------------------------- search ------------------------------- */
+
+.sb-search {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--h-input);
+  margin: var(--sp-2);
+  padding: 0 var(--sp-1) 0 var(--sp-2);
+  background: var(--chassis);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-md);
+  transition: border-color var(--dur-1) var(--ease);
+}
+
+.sb-search:hover {
+  border-color: var(--faint);
+}
+
+.sb-search:focus-within {
+  border-color: var(--faint);
+}
+
+/* The ring belongs to the well, not the bare input inside it. */
+.sb-search:has(.sb-search-input:focus-visible) {
+  border-color: var(--signal);
+  outline: 1px solid var(--signal);
+  outline-offset: -1px;
+}
+
+.sb-search-icon {
+  flex: none;
+  color: var(--faint);
+}
+
+.sb-search-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: var(--bone);
+  font-family: var(--font-ui);
+  font-size: var(--fs-sm);
+}
+
+.sb-search-clear {
+  flex: none;
+}
+
+/* ---------------------------- panel body --------------------------- */
+
+.sb-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.sb-count-line {
+  flex: none;
+  padding: 0 var(--sp-3) var(--sp-1);
+  font-family: var(--font-plate);
+  font-size: var(--fs-plate);
+  font-weight: 600;
+  letter-spacing: var(--ls-plate);
+  line-height: var(--lh-tight);
+  text-transform: none;
+  color: var(--faint);
+}
+
+.sb-tree {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding-bottom: var(--sp-4);
+}
+
+/* ---------------------------- tree rows ---------------------------- */
+
+.sb-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: var(--h-row);
+  padding-right: var(--sp-2);
+  /* Reserved so selecting a row never shifts its contents. */
+  border-left: 2px solid transparent;
+  color: var(--bone);
+  user-select: none;
+  cursor: pointer;
+  transition:
+    background var(--dur-1) var(--ease),
+    border-color var(--dur-1) var(--ease);
+}
+
+.sb-row:hover {
+  background: color-mix(in srgb, var(--rail) 55%, transparent);
+}
+
+.sb-row.is-selected {
+  background: var(--signal-wash);
+  border-left-color: var(--signal);
+}
+
+.sb-row:focus-visible {
+  outline: var(--ring-w) solid var(--signal);
+  outline-offset: -2px;
+}
+
+/* The ladder: one hairline per depth step, drawn behind the row. */
+.sb-indent {
+  flex: none;
+  align-self: stretch;
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0 6px,
+    var(--edge-soft) 6px 7px,
+    transparent 7px 13px
+  );
+}
+
+.sb-caret {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  color: var(--faint);
+}
+
+.sb-row:hover .sb-caret,
+.sb-row.is-selected .sb-caret {
+  color: var(--mute);
+}
+
+.sb-glyph {
+  flex: none;
+  color: var(--faint);
+}
+
+.sb-row:hover .sb-glyph,
+.sb-row.is-selected .sb-glyph {
+  color: var(--signal);
+}
+
+/* Folders read as containers rather than another grey row. */
+.sb-row.is-folder .sb-glyph {
+  color: var(--amber-2);
+}
+
+/* A fixed gutter so every request name starts on the same column. */
+.sb-method {
+  flex: none;
+}
+
+.sb-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-tight);
+  color: var(--bone);
+}
+
+/* Collections are section headers on the faceplate, not file names. */
+.sb-row.is-collection .sb-name {
+  font-family: var(--font-plate);
+  font-size: var(--fs-plate-lg);
+  font-weight: 600;
+  letter-spacing: var(--ls-plate);
+  text-transform: none;
+}
+
+.sb-row.is-folder .sb-name {
+  color: var(--bone);
+}
+
+.sb-row.is-request .sb-name {
+  color: var(--bone);
+}
+
+.sb-row.is-request:hover .sb-name,
+.sb-row.is-request.is-selected .sb-name {
+  color: var(--bone);
+}
+
+.sb-badge {
+  flex: none;
+  font-size: var(--fs-xs);
+  line-height: 1;
+  color: var(--faint);
+}
+
+.sb-mark {
+  padding: 0 1px;
+  border-radius: 2px;
+  background: var(--signal-wash-2);
+  color: var(--signal);
+}
+
+/* ---------------------------- inline rename ------------------------ */
+
+.sb-rename {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 20px;
+  padding: 0 4px;
+  background: var(--chassis);
+  border: 1px solid var(--signal);
+  border-radius: var(--r-sm);
+  outline: none;
+  color: var(--bone);
+  font-family: var(--font-ui);
+  font-size: var(--fs-sm);
+}
+
+.sb-row.is-renaming {
+  background: var(--rail);
+}
+
+/* ---------------------------- variable set switcher ---------------- */
+
+.sb-setsel {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 3px;
+  max-width: 96px;
+  height: 18px;
+  padding: 0 5px;
+  background: var(--rail);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-sm);
+  color: var(--mute);
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  line-height: 16px;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-1) var(--ease),
+    color var(--dur-1) var(--ease),
+    background-color var(--dur-1) var(--ease);
+}
+
+.sb-setsel-glyph {
+  flex: none;
+  opacity: 0.75;
+}
+
+.sb-setsel-name {
+  min-width: 0;
+}
+
+.sb-setsel:hover,
+.sb-setsel.is-open {
+  background: var(--rail-hi);
+  border-color: var(--faint);
+  color: var(--bone);
+}
+
+.sb-setsel:hover .sb-setsel-glyph,
+.sb-setsel.is-open .sb-setsel-glyph {
+  opacity: 1;
+  color: var(--signal);
+}
+
+.sb-setsel:focus-visible {
+  border-color: var(--signal);
+  outline: 1px solid var(--signal);
+  outline-offset: -1px;
+  color: var(--bone);
+}
+
+/* ---------------------------- drop indicator ----------------------- */
+
+.sb-row[data-drop]::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+.sb-row[data-drop='before']::after {
+  top: 0;
+  height: 2px;
+  background: var(--signal);
+}
+
+.sb-row[data-drop='after']::after {
+  bottom: 0;
+  height: 2px;
+  background: var(--signal);
+}
+
+.sb-row[data-drop='inside']::after {
+  inset: 0;
+  border: 1px solid var(--signal);
+  border-radius: var(--r-sm);
+  background: var(--signal-wash);
+}
+
+/* ---------------------------- history ------------------------------ */
+
+.sb-history {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding-bottom: var(--sp-4);
+}
+
+.sb-hgroup-label {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  padding: var(--sp-2) var(--sp-3) var(--sp-1);
+  background: var(--well);
+  border-bottom: 1px solid var(--edge-soft);
+  color: var(--faint);
+}
+
+.sb-hrow {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 5px var(--sp-2) 6px;
+  border-left: 2px solid transparent;
+  border-bottom: 1px solid var(--edge-soft);
+  text-align: left;
+  user-select: none;
+  cursor: pointer;
+  transition:
+    background var(--dur-1) var(--ease),
+    border-color var(--dur-1) var(--ease);
+}
+
+.sb-hrow:hover {
+  background: color-mix(in srgb, var(--rail) 55%, transparent);
+  border-left-color: var(--edge);
+}
+
+.sb-hrow:focus-visible {
+  outline: var(--ring-w) solid var(--signal);
+  outline-offset: -2px;
+}
+
+.sb-hrow.is-failed {
+  border-left-color: color-mix(in srgb, var(--rust) 45%, transparent);
+}
+
+.sb-hrow-top,
+.sb-hrow-bot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* A hanging indent hangs the detail line off the name above it. */
+.sb-hrow-bot {
+  padding-left: var(--sp-4);
+}
+
+.sb-hstatus {
+  flex: none;
+  min-width: 3ch;
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.sb-hfail {
+  color: var(--rust);
+}
+
+.sb-htime,
+.sb-hdur {
+  flex: none;
+  font-size: var(--fs-xs);
+  line-height: 1;
+  color: var(--faint);
+}
+
+.sb-hurl,
+.sb-herr {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-tight);
+}
+
+.sb-hurl {
+  color: var(--faint);
+}
+
+.sb-herr {
+  color: var(--rust);
+}
+
+/* The latency trace repeats here at list scale: same encoding, one
+   glance, so a slow call is recognisable before any number is read. */
+.waveform-wrap.sb-hwave,
+.sb-hwave-gap {
+  flex: none;
+  width: 44px;
+  min-width: 0;
+}
+
+/* ---------------------------- footer ------------------------------- */
+
+.sb-foot {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: var(--sp-1) var(--sp-1);
+  background: var(--chassis-2);
+  border-top: 1px solid var(--edge);
+}
+
+.sb-foot .btn {
+  flex: 1 1 auto;
+  min-width: 0;
+  justify-content: flex-start;
+}
+
+/* ------------------------- expand / collapse all ------------------- */
+
+/* Subtle by design: it only surfaces once the row is under the pointer,
+   and holds its width so the row never reflows on hover. */
+.sb-treetoggle {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--r-sm);
+  color: var(--faint);
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity var(--dur-1) var(--ease),
+    color var(--dur-1) var(--ease),
+    background-color var(--dur-1) var(--ease);
+}
+
+.sb-row:hover .sb-treetoggle,
+.sb-row:focus-within .sb-treetoggle,
+.sb-treetoggle:focus-visible {
+  opacity: 1;
+}
+
+.sb-treetoggle:hover {
+  background: var(--rail-hi);
+  color: var(--bone);
+}
+
+.sb-treetoggle:focus-visible {
+  outline: 1px solid var(--signal);
+  outline-offset: -1px;
+  color: var(--bone);
+}

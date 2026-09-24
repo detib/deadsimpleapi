@@ -1,0 +1,1016 @@
+/* ------------------------------------------------------------------ */
+/* Right panel: the response readout.                                  */
+/*                                                                     */
+/* Three bands: a fixed status ribbon, a fixed tab strip, and one       */
+/* recessed well that scrolls. Nothing outside the well ever scrolls,   */
+/* so the status of a response stays on screen while a 20MB body is     */
+/* being read.                                                          */
+/* ------------------------------------------------------------------ */
+
+.respanel {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--chassis);
+}
+
+/* The tab panel below the strip. Its children carry the scroll. */
+.res-pane {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* The well. Every tab's content lands in one of these. */
+.res-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: var(--well);
+}
+
+/* The streaming body is focusable so it can be scrolled from the keyboard. */
+.res-body:focus-visible {
+  outline: var(--ring-w) solid var(--signal);
+  outline-offset: calc(-1 * var(--ring-w));
+}
+
+.empty-state.res-fill {
+  flex: 1 1 auto;
+  min-height: 0;
+  background: var(--well);
+}
+
+/* .empty-state centres itself, which only reads as centred if it is given
+   the whole well to sit in. */
+.res-body > .empty-state {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.res-spacer {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Names a metric for a screen reader without silkscreening a label next
+   to every number. */
+.res-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------------------------- waiting ------------------------------ */
+
+.res-center {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+  min-height: 0;
+  padding: var(--sp-6) var(--sp-5);
+  background: var(--well);
+  text-align: center;
+}
+
+.spinner.res-spinner-lg {
+  width: 20px;
+  height: 20px;
+  border-width: 2px;
+}
+
+.spinner.res-spinner-xs {
+  width: 9px;
+  height: 9px;
+  border-width: 1.5px;
+}
+
+.res-center .res-elapsed {
+  font-size: var(--fs-lg);
+  font-weight: 500;
+  line-height: var(--lh-tight);
+  color: var(--signal);
+}
+
+/* ---------------------------- status ribbon ------------------------ */
+
+.res-ribbon {
+  /* Its own query container: the ribbon sheds items as the panel narrows
+     rather than wrapping onto a second line. */
+  container-type: inline-size;
+  container-name: res-ribbon;
+  position: relative;
+  z-index: var(--z-sticky);
+  flex: none;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--sp-2);
+  height: var(--h-bar);
+  padding: 0 var(--sp-2) 0 var(--sp-3);
+  background: var(--chassis-2);
+  border-bottom: 1px solid var(--edge);
+}
+
+.res-ribbon .res-status {
+  flex: none;
+  font-size: var(--fs-md);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.res-ribbon .res-reason {
+  flex: 0 1 auto;
+  min-width: 0;
+  font-family: var(--font-plate);
+  font-size: var(--fs-plate);
+  font-weight: 600;
+  letter-spacing: var(--ls-plate);
+  line-height: var(--lh-tight);
+  text-transform: none;
+  color: var(--mute);
+}
+
+/* Hairline-separated gauges, read left to right. */
+.res-ribbon .res-metric {
+  flex: none;
+  padding-left: var(--sp-2);
+  border-left: 1px solid var(--edge);
+  font-size: var(--fs-xs);
+  line-height: 1;
+  color: var(--mute);
+}
+
+.waveform-wrap.res-wave {
+  flex: 0 1 auto;
+  gap: 0;
+  width: 84px;
+  min-width: 40px;
+}
+
+.chip.res-live {
+  gap: 5px;
+}
+
+.chip.res-chip-btn {
+  cursor: pointer;
+  transition:
+    background var(--dur-1) var(--ease),
+    border-color var(--dur-1) var(--ease),
+    color var(--dur-1) var(--ease);
+}
+
+.chip.res-chip-btn:hover {
+  border-color: var(--faint);
+  color: var(--bone);
+}
+
+.chip.res-chip-btn[aria-expanded='true'] {
+  background: var(--rail-hi);
+  border-color: var(--faint);
+  color: var(--bone);
+}
+
+.chip.res-trunc {
+  gap: 5px;
+}
+
+.res-chip-link {
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--signal);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.res-chip-link:hover {
+  color: var(--signal-hi);
+}
+
+/* Flush against the text: the chip that holds this link clips its overflow,
+   and an offset ring would lose its top and bottom edge to that clip. */
+.res-chip-link:focus-visible {
+  outline-offset: 0;
+}
+
+.chip.res-issues {
+  cursor: help;
+}
+
+/* .chip is flex:none. In the ribbon the wide ones have to give way as the
+   panel narrows, or the buttons after them are pushed past the panel edge -
+   .respanel clips, so they become unclickable rather than merely cramped. */
+.res-ribbon .chip {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+/* Clipping keeps a squeezed label inside its pill, but the chip that owns a
+   tooltip must not clip, or it clips the tooltip with it. */
+.res-ribbon .chip:not(.tooltip) {
+  overflow: hidden;
+}
+
+/* Issue text is a sentence, not a label, so it is allowed to wrap. */
+.res-issues[data-tip]::after {
+  max-width: 280px;
+  white-space: normal;
+}
+
+/* Bare .btn-icon in the ribbon: quieter than a .btn, same box. */
+.res-ribbon .btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  color: var(--mute);
+  cursor: pointer;
+  transition:
+    background var(--dur-1) var(--ease),
+    color var(--dur-1) var(--ease);
+}
+
+.res-ribbon .btn-icon:hover:not(:disabled) {
+  background: var(--rail);
+  color: var(--bone);
+}
+
+.res-ribbon .btn-icon:active:not(:disabled) {
+  background: var(--rail-hi);
+}
+
+.res-ribbon .btn-icon:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.res-ribbon .btn-icon[aria-pressed='true'] {
+  background: var(--signal-wash);
+  color: var(--signal);
+}
+
+.res-ribbon .btn-icon:focus-visible {
+  outline-offset: -1px;
+}
+
+/* Shed the decorative first, the derivable second; the status code, the
+   total time and the actions never leave. */
+@container res-ribbon (max-width: 520px) {
+  /* .waveform-wrap declares display:flex at the same specificity, so this
+     has to be compound or the CSS bundle order decides which one wins. */
+  .waveform-wrap.res-wave {
+    display: none;
+  }
+}
+
+@container res-ribbon (max-width: 430px) {
+  .res-ribbon .res-reason {
+    display: none;
+  }
+}
+
+@container res-ribbon (max-width: 340px) {
+  .res-ribbon .res-metric + .res-metric {
+    display: none;
+  }
+}
+
+/* ---------------------------- redirect hops ------------------------ */
+
+.res-hops {
+  flex: none;
+  max-height: calc(var(--h-row) * 5);
+  margin: 0;
+  padding: 0 var(--sp-3);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  background: var(--well);
+  border-bottom: 1px solid var(--edge);
+}
+
+.res-hops li {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+  height: var(--h-row);
+}
+
+.res-hops li + li {
+  border-top: 1px solid var(--edge-soft);
+}
+
+.res-hops .res-hop-status {
+  flex: none;
+  min-width: 3ch;
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.res-hops .res-hop-url {
+  flex: 1 1 40%;
+  min-width: 0;
+  font-size: var(--fs-xs);
+  color: var(--faint);
+}
+
+.res-hop-arrow {
+  flex: none;
+  color: var(--faint);
+}
+
+.res-hops .res-hop-loc {
+  flex: 1 1 60%;
+  min-width: 0;
+  font-size: var(--fs-xs);
+  color: var(--mute);
+}
+
+/* ---------------------------- tab strip ---------------------------- */
+
+.tabs.res-tabs {
+  flex: none;
+  padding: 0 var(--sp-1);
+  background: var(--chassis);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.tabs.res-tabs::-webkit-scrollbar {
+  height: 0;
+}
+
+.res-tabs .tab {
+  padding: 0 var(--sp-2);
+}
+
+/* A sideways scroller clips on both axes, so the disabled Table tab's
+   explanation would never appear below the strip. It hangs beside the tab,
+   inside the scrollport, instead. */
+.res-tabs .tab[data-tip]::after {
+  top: 50%;
+  bottom: auto;
+  left: calc(100% + var(--sp-1));
+  transform: translateY(-50%);
+}
+
+.res-tabs .res-count {
+  font-size: var(--fs-xs);
+  letter-spacing: 0;
+  line-height: 1;
+  color: var(--faint);
+}
+
+.res-tabs .tab[aria-selected='true'] .res-count {
+  color: var(--mute);
+}
+
+/* ---------------------------- tab toolbar -------------------------- */
+
+.res-toolbar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: calc(var(--h-row) + var(--sp-1));
+  padding: var(--sp-1) var(--sp-2);
+  background: var(--chassis);
+  border-bottom: 1px solid var(--edge-soft);
+}
+
+.res-toolbar > .plate {
+  flex: none;
+  color: var(--faint);
+}
+
+.res-toolbar .res-method {
+  flex: none;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: none;
+}
+
+/* The ring belongs to the well, not the bare input inside it. */
+.res-search {
+  flex: 0 1 260px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  height: 24px;
+  padding: 0 var(--sp-2);
+  background: var(--well);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-md);
+  transition: border-color var(--dur-1) var(--ease);
+}
+
+.res-search:hover {
+  border-color: var(--faint);
+}
+
+.res-search:has(.res-search-input:focus-visible) {
+  border-color: var(--signal);
+  outline: 1px solid var(--signal);
+  outline-offset: -1px;
+}
+
+.res-search-icon {
+  flex: none;
+  color: var(--faint);
+}
+
+.res-search .res-search-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: var(--bone);
+  font-size: var(--fs-xs);
+}
+
+/* The native affordance is a foreign glyph on this faceplate. */
+.res-search-input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.res-find {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+.res-toolbar .res-hits {
+  flex: none;
+  min-width: 5ch;
+  font-size: var(--fs-xs);
+  line-height: 1;
+  color: var(--faint);
+}
+
+.res-seg {
+  flex: none;
+  display: inline-flex;
+  background: var(--well);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.res-seg-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 var(--sp-2);
+  background: transparent;
+  border: 0;
+  color: var(--mute);
+  font-family: var(--font-plate);
+  font-size: var(--fs-plate);
+  font-weight: 600;
+  letter-spacing: var(--ls-plate);
+  line-height: 1;
+  text-transform: none;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+  transition:
+    background var(--dur-1) var(--ease),
+    color var(--dur-1) var(--ease);
+}
+
+.res-seg-btn + .res-seg-btn {
+  border-left: 1px solid var(--edge);
+}
+
+.res-seg-btn:hover {
+  background: var(--rail);
+  color: var(--bone);
+}
+
+.res-seg-btn[data-active='true'] {
+  background: var(--rail-hi);
+  color: var(--bone);
+}
+
+/* The lit segment: the accent is carried by the glyph, not a fill. */
+.res-seg-btn[data-active='true'] .icon {
+  color: var(--signal);
+}
+
+.res-seg-btn:focus-visible {
+  outline-offset: -2px;
+}
+
+.chip.res-type {
+  flex: none;
+  max-width: 22ch;
+  overflow: hidden;
+}
+
+/* ---------------------------- body: text --------------------------- */
+
+.res-editor {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  background: var(--well);
+}
+
+/* .codeeditor is height:100%, so the chain above it must be definite. */
+.res-editor > .codeeditor {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* Grows to fill a short response, never shrinks below its content: the
+   well scrolls instead of clipping the tree. */
+.res-body > .res-tree {
+  flex: 1 0 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* max-content keeps a long line intact and hands the overflow to the
+   well; min-width keeps the block full width for selection. */
+.res-pre {
+  flex: none;
+  width: max-content;
+  min-width: 100%;
+  padding: var(--sp-2) var(--sp-3);
+  color: var(--bone);
+  font-family: var(--font-data);
+  font-size: var(--fs-data);
+  line-height: var(--lh-data);
+  white-space: pre;
+  tab-size: 2;
+  user-select: text;
+  cursor: text;
+}
+
+.res-pre.is-wrap {
+  width: auto;
+  min-width: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.res-pre.is-flush {
+  padding: 0;
+}
+
+.res-hit {
+  padding: 0 1px;
+  border-radius: 2px;
+  background: var(--signal-wash-2);
+  color: var(--bone);
+}
+
+.res-hit.is-active {
+  background: var(--signal-solid);
+  color: var(--on-signal);
+}
+
+.res-note {
+  flex: none;
+  padding: var(--sp-2) var(--sp-3);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-ui);
+  color: var(--faint);
+}
+
+.res-note.is-flush {
+  padding: 0;
+}
+
+.res-parse-error {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-3);
+  background: var(--rust-wash);
+  border-bottom: 1px solid color-mix(in srgb, var(--rust) 34%, transparent);
+  color: var(--rust);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-ui);
+}
+
+/* ---------------------------- body: event stream ------------------- */
+
+.res-sse {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: var(--sp-2);
+  list-style: none;
+}
+
+.res-sse-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--chassis);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.res-sse-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 5px var(--sp-2);
+  background: var(--chassis-2);
+  border-bottom: 1px solid var(--edge-soft);
+}
+
+.res-sse-head .res-sse-index {
+  flex: none;
+  min-width: 3ch;
+  font-size: var(--fs-xs);
+  line-height: 1;
+  text-align: right;
+  color: var(--faint);
+}
+
+.res-sse-head .res-sse-event {
+  flex: none;
+  font-size: var(--fs-plate-lg);
+  color: var(--signal);
+}
+
+/* Condensed to match the event name; the id keeps its own case. */
+.res-sse-head .chip {
+  font-family: var(--font-plate);
+  font-size: var(--fs-plate-lg);
+  letter-spacing: 0.02em;
+}
+
+.res-sse-body {
+  min-width: 0;
+  padding: var(--sp-2);
+  background: var(--well);
+  overflow-x: auto;
+}
+
+/* ---------------------------- body: hex dump ----------------------- */
+
+.res-body.res-hex {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0;
+  padding: var(--sp-2) 0;
+  user-select: text;
+  cursor: text;
+}
+
+.res-hex pre {
+  flex: none;
+  font-family: var(--font-data);
+  font-size: var(--fs-data);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--lh-data);
+  white-space: pre;
+}
+
+/* The offset column stays put while the byte grid scrolls under it. */
+.res-hex-off {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  padding: 0 var(--sp-2) 0 var(--sp-3);
+  background: var(--well);
+  border-right: 1px solid var(--edge-soft);
+  color: var(--faint);
+}
+
+.res-hex-bytes {
+  padding: 0 var(--sp-3);
+  color: var(--bone);
+}
+
+.res-hex-ascii {
+  padding: 0 var(--sp-3);
+  border-left: 1px solid var(--edge-soft);
+  color: var(--mute);
+}
+
+/* ---------------------------- body: media -------------------------- */
+
+.res-body.res-media {
+  align-items: center;
+  /* Safe: centring inside a scroller puts the overflow above the scroll
+     origin, where it cannot be reached. */
+  justify-content: safe center;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+}
+
+.res-body.res-media.is-fill {
+  justify-content: stretch;
+  gap: 0;
+  padding: 0;
+}
+
+.res-image {
+  flex: 0 1 auto;
+  max-width: 100%;
+  min-height: 0;
+  object-fit: contain;
+  border: 1px solid var(--edge);
+  border-radius: var(--r-sm);
+}
+
+.res-frame {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  border: 0;
+  background: var(--well);
+}
+
+.res-av {
+  flex: none;
+  width: 100%;
+  max-width: 560px;
+}
+
+video.res-av {
+  max-height: 100%;
+}
+
+.res-media .res-meta {
+  flex: none;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-tight);
+  text-align: center;
+  color: var(--faint);
+}
+
+.res-media.is-fill .res-meta {
+  width: 100%;
+  padding: var(--sp-1) var(--sp-2);
+  background: var(--chassis);
+  border-top: 1px solid var(--edge);
+}
+
+/* ---------------------------- table tab ---------------------------- */
+
+.res-tablehost {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  background: var(--well);
+}
+
+.res-datatable {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* ---------------------------- key/value tables --------------------- */
+
+.res-body > .table-lite.res-table {
+  flex: none;
+}
+
+.res-table .res-hname {
+  width: 1%;
+  white-space: nowrap;
+  color: var(--mute);
+}
+
+.res-table td.res-num {
+  white-space: nowrap;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--bone);
+}
+
+/* Response values are the one thing in this panel worth dragging over. */
+.res-selectable {
+  user-select: text;
+  cursor: text;
+}
+
+/* Six columns do not fit a narrow panel; the well scrolls sideways
+   rather than shredding every value into a column of single letters. */
+.table-lite.res-cookies {
+  min-width: 680px;
+}
+
+.res-cookies .res-cookie-value {
+  max-width: 28ch;
+  color: var(--bone);
+}
+
+.res-cookies .res-flags {
+  white-space: nowrap;
+}
+
+.res-cookies .res-flags .chip + .chip {
+  margin-left: var(--sp-1);
+}
+
+/* ---------------------------- timing tab --------------------------- */
+
+.res-body.res-timing {
+  align-items: stretch;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-3);
+}
+
+.waveform-wrap.res-wave-lg {
+  flex: none;
+  min-width: 0;
+}
+
+.res-timing .table-lite.res-table {
+  max-width: 560px;
+}
+
+.res-tls-warn {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  max-width: 560px;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--rust-wash);
+  border: 1px solid color-mix(in srgb, var(--rust) 34%, transparent);
+  border-radius: var(--r-md);
+  color: var(--rust);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-ui);
+}
+
+/* ---------------------------- sent tab ----------------------------- */
+
+.res-body.res-sent {
+  align-items: stretch;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+}
+
+.res-sent .res-url {
+  flex: none;
+  padding: var(--sp-2);
+  background: var(--chassis);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-md);
+  color: var(--bone);
+  line-height: var(--lh-data);
+  overflow-wrap: anywhere;
+}
+
+.res-sent .res-section {
+  flex: none;
+  margin-top: var(--sp-2);
+  padding-bottom: var(--sp-1);
+  border-bottom: 1px solid var(--edge-soft);
+  color: var(--faint);
+}
+
+/* .truncate needs a bound; a table cell will not give it one. */
+.res-part .mono {
+  display: inline-block;
+  max-width: 44ch;
+  vertical-align: middle;
+}
+
+.res-part .chip {
+  margin-left: var(--sp-1);
+  vertical-align: middle;
+}
+
+/* CodeEditor needs a definite height; em so it tracks --ui-scale. */
+.res-sent-editor {
+  flex: none;
+  height: 16em;
+  min-height: 0;
+  background: var(--well);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+/* ---------------------------- failure ------------------------------ */
+
+.res-fail {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: safe center;
+  gap: var(--sp-2);
+  min-height: 0;
+  padding: var(--sp-6) var(--sp-5);
+  overflow-y: auto;
+  background: var(--well);
+  text-align: center;
+}
+
+.res-fail .res-fail-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--rust);
+}
+
+.res-fail-msg {
+  max-width: 54ch;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-ui);
+  color: var(--bone);
+  overflow-wrap: anywhere;
+}
+
+.res-fail .res-fail-code {
+  padding: 2px var(--sp-2);
+  background: var(--chassis);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-xs);
+  color: var(--rust);
+}
+
+.res-fail-issues {
+  max-width: 54ch;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-ui);
+  color: var(--faint);
+}
+
+.res-fail-issues li + li {
+  margin-top: 2px;
+}
+
+/* A hint is advice, not a verdict: left-aligned prose behind an amber rule. */
+.res-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  max-width: 58ch;
+  margin-top: var(--sp-2);
+  padding: var(--sp-3);
+  background: var(--chassis);
+  border: 1px solid var(--edge);
+  border-left: 2px solid var(--signal);
+  border-radius: var(--r-md);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-ui);
+  text-align: left;
+  color: var(--mute);
+}
+
+.res-hint strong {
+  font-weight: 600;
+  color: var(--bone);
+}

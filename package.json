@@ -1,0 +1,50 @@
+{
+  "name": "deadsimple",
+  "productName": "Deadsimple",
+  "version": "1.0.0",
+  "description": "A local-first desktop API client",
+  "author": "Admin",
+  "license": "MIT",
+  "private": true,
+  "main": "dist-electron/main.cjs",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "node scripts/build.mjs && vite build",
+    "typecheck": "tsc --noEmit",
+    "dist": "npm run build && electron-builder --win --publish never",
+    "dist:portable": "npm run build && electron-builder --win portable --publish never"
+  },
+  "dependencies": {
+    "@codemirror/autocomplete": "^6.20.3",
+    "@codemirror/commands": "^6.11.0",
+    "@codemirror/lang-html": "^6.4.12",
+    "@codemirror/lang-javascript": "^6.2.5",
+    "@codemirror/lang-json": "^6.0.2",
+    "@codemirror/lang-xml": "^6.1.0",
+    "@codemirror/language": "^6.12.4",
+    "@codemirror/search": "^6.7.1",
+    "@codemirror/state": "^6.7.1",
+    "@codemirror/view": "^6.43.9",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/ibm-plex-sans": "^5.3.0",
+    "@fontsource/ibm-plex-sans-condensed": "^5.3.0",
+    "@lezer/highlight": "^1.2.3",
+    "codemirror": "^6.0.2",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "yaml": "^2.9.0",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "@vitejs/plugin-react": "^6.1.0",
+    "electron": "^41.7.1",
+    "electron-builder": "^26.15.3",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2"
+  }
+}

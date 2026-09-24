@@ -1,0 +1,94 @@
+.tabbar {
+  flex: none;
+  display: flex;
+  align-items: stretch;
+  min-height: 32px;
+  background: var(--chassis-2);
+  border-bottom: 1px solid var(--edge);
+}
+
+.tabbar-strip {
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  flex: 1;
+  min-width: 0;
+}
+
+.tabbar-strip::-webkit-scrollbar { height: 0; }
+
+.reqtab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 6px 0 10px;
+  max-width: 230px;
+  min-width: 0;
+  cursor: pointer;
+  border-right: 1px solid var(--edge);
+  border-bottom: 2px solid transparent;
+  color: var(--mute);
+  user-select: none;
+  white-space: nowrap;
+  transition: background var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
+}
+
+.reqtab:hover { background: var(--rail); color: var(--bone); }
+
+.reqtab.is-active {
+  background: var(--chassis);
+  color: var(--bone);
+  border-bottom-color: var(--signal);
+}
+
+.reqtab.is-missing { opacity: 0.5; font-style: italic; }
+
+.reqtab-method {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  flex: none;
+}
+
+.reqtab-name {
+  font-size: var(--fs-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.reqtab-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--signal); flex: none;
+}
+
+.reqtab-spinner { width: 11px; height: 11px; flex: none; }
+
+.reqtab-close {
+  display: grid;
+  place-items: center;
+  width: 18px; height: 18px;
+  flex: none;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--faint);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--dur-1) var(--ease), background var(--dur-1) var(--ease);
+}
+
+.reqtab:hover .reqtab-close,
+.reqtab.is-active .reqtab-close { opacity: 1; }
+
+.reqtab-close:hover { background: var(--rail-hi); color: var(--bone); }
+
+/* A preview tab is on loan: the next sidebar click takes this slot back.
+   Plex ships no italic face and the app disables synthesis globally, so this
+   is the one place that opts back in. */
+.reqtab.is-preview .reqtab-name {
+  font-style: italic;
+  font-synthesis: style;
+}

@@ -1,0 +1,966 @@
+/* ------------------------------------------------------------------ */
+/* Dialog internals. The shell (.modal-scrim, .modal, .modal-head,     */
+/* .modal-body, .modal-foot) is owned by layout.css; everything here   */
+/* is what sits inside one.                                            */
+/* ------------------------------------------------------------------ */
+
+/* ---------------------------- shell add-ons ------------------------ */
+
+.modal.mdl-w-sm {
+  min-width: 0;
+  width: min(420px, 92vw);
+}
+
+.modal.mdl-w-lg {
+  width: min(720px, 92vw);
+}
+
+.modal.mdl-w-xl {
+  width: min(920px, 92vw);
+}
+
+/* A dialog whose content scrolls internally wants a stable frame rather
+   than one that grows a row at a time as data loads. */
+.modal.mdl-tall {
+  height: min(680px, 84vh);
+}
+
+.mdl-head-spacer {
+  flex: 1 1 auto;
+  min-width: var(--sp-4);
+}
+
+.modal-body.mdl-body-flush {
+  flex: 1 1 auto;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.mdl-faint {
+  color: var(--faint);
+}
+
+.mdl-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------------------------- footer bits -------------------------- */
+
+/* Pushes the first control to the leading edge of the right-aligned foot. */
+.mdl-foot-lead {
+  margin-right: auto;
+}
+
+.mdl-foot-note {
+  margin-right: auto;
+  align-self: center;
+  font-size: var(--fs-sm);
+  color: var(--mute);
+}
+
+.mdl-foot-field {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.mdl-foot-select {
+  width: auto;
+  min-width: 200px;
+}
+
+/* ---------------------------- sections ----------------------------- */
+
+.mdl-lede {
+  margin-bottom: var(--sp-4);
+  font-size: var(--fs-sm);
+  color: var(--mute);
+}
+
+.mdl-sec + .mdl-sec {
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--edge-soft);
+}
+
+.mdl-sec-title {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+  color: var(--bone);
+}
+
+.mdl-sec-note {
+  margin-bottom: var(--sp-3);
+  font-size: var(--fs-sm);
+  color: var(--mute);
+}
+
+.mdl-fields {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------------------------- fields ------------------------------- */
+
+.mdl-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 260px);
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--edge-soft);
+}
+
+.mdl-field:last-child {
+  border-bottom: 0;
+}
+
+.mdl-field-text {
+  min-width: 0;
+}
+
+.mdl-field-label {
+  display: block;
+  font-size: var(--fs-ui);
+  color: var(--bone);
+}
+
+.mdl-field-hint {
+  margin-top: 2px;
+  font-size: var(--fs-xs);
+  color: var(--faint);
+  line-height: var(--lh-ui);
+}
+
+.mdl-field-control {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.mdl-number {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.mdl-number-input {
+  width: 120px;
+  text-align: right;
+}
+
+.mdl-suffix {
+  flex: none;
+  min-width: 32px;
+}
+
+.mdl-range {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+}
+
+.mdl-range-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: var(--h-input);
+  accent-color: var(--signal);
+  cursor: pointer;
+}
+
+.mdl-range-value {
+  flex: none;
+  min-width: 52px;
+  text-align: right;
+  color: var(--mute);
+}
+
+.mdl-path {
+  margin-top: var(--sp-3);
+  color: var(--faint);
+  overflow-wrap: anywhere;
+}
+
+.mdl-about {
+  display: flex;
+  flex-direction: column;
+}
+
+.mdl-about-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-1) 0;
+  border-bottom: 1px solid var(--edge-soft);
+}
+
+.mdl-about-row:last-child {
+  border-bottom: 0;
+}
+
+.mdl-about-row dd {
+  color: var(--mute);
+}
+
+/* ---------------------------- segmented ---------------------------- */
+
+.mdl-seg {
+  display: inline-flex;
+  flex: none;
+  padding: 2px;
+  background: var(--well);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-md);
+}
+
+.mdl-seg-btn {
+  min-height: 22px;
+  padding: 0 var(--sp-3);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--mute);
+  font-family: var(--font-plate);
+  font-size: var(--fs-plate);
+  font-weight: 600;
+  letter-spacing: var(--ls-plate);
+  text-transform: none;
+  white-space: nowrap;
+  transition:
+    background var(--dur-1) var(--ease),
+    color var(--dur-1) var(--ease);
+}
+
+.mdl-seg-btn:hover {
+  color: var(--bone);
+}
+
+.mdl-seg-btn[aria-pressed='true'] {
+  background: var(--rail-hi);
+  color: var(--bone);
+}
+
+.mdl-seg-btn:focus-visible {
+  outline-offset: -1px;
+}
+
+.mdl-inline-name {
+  height: 24px;
+}
+
+/* ---------------------------- cookie jar --------------------------- */
+
+.mdl-ck-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex: none;
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--edge);
+  background: var(--chassis-2);
+}
+
+.mdl-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: var(--h-input);
+  padding: 0 var(--sp-2);
+  background: var(--well);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-md);
+  color: var(--faint);
+  transition: border-color var(--dur-1) var(--ease);
+}
+
+.mdl-search:hover,
+.mdl-search:focus-within {
+  border-color: var(--faint);
+}
+
+/* The ring belongs to the well, not to the bare input sitting in it. */
+.mdl-search:has(.mdl-search-input:focus-visible) {
+  border-color: var(--signal);
+  outline: 1px solid var(--signal);
+  outline-offset: -1px;
+}
+
+.mdl-search-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: transparent;
+  color: var(--bone);
+  font-size: var(--fs-ui);
+  outline: none;
+}
+
+.mdl-search-input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.mdl-ck-count {
+  flex: none;
+}
+
+.mdl-ck-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  /* Not .scroll-y: the table has to be able to scroll sideways too. */
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.mdl-ck-table {
+  table-layout: auto;
+  width: 100%;
+}
+
+.mdl-ck-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: calc(var(--z-sticky) + 1);
+  padding: 0;
+}
+
+.mdl-ck-table thead th:not(:has(.mdl-sort)) {
+  padding: 0 var(--sp-2);
+}
+
+.mdl-sort {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  width: 100%;
+  height: var(--h-row);
+  padding: 0 var(--sp-2);
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  transition: color var(--dur-1) var(--ease);
+}
+
+.mdl-sort:hover {
+  color: var(--bone);
+}
+
+.mdl-sort:focus-visible {
+  outline-offset: -2px;
+}
+
+.mdl-ck-group th {
+  position: sticky;
+  top: var(--h-row);
+  z-index: var(--z-sticky);
+  display: table-cell;
+  padding: var(--sp-1) var(--sp-2);
+  background: var(--rail);
+  border-top: 1px solid var(--edge);
+  border-bottom: 1px solid var(--edge);
+  color: var(--bone);
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.mdl-ck-group-count {
+  margin-left: var(--sp-2);
+  color: var(--faint);
+}
+
+.mdl-ck-value {
+  color: var(--mute);
+}
+
+.mdl-ck-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1);
+}
+
+.mdl-ck-actions,
+.mdl-ck-actions-head {
+  width: 34px;
+  text-align: right;
+}
+
+.mdl-ck-table tbody tr:hover .btn-icon {
+  color: var(--bone);
+}
+
+/* ---------------------------- warnings ----------------------------- */
+
+.mdl-warn-list {
+  list-style: none;
+  margin: var(--sp-2) 0 0;
+  padding: var(--sp-2) var(--sp-3);
+  max-height: 132px;
+  background: color-mix(in srgb, var(--amber-2) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--amber-2) 34%, transparent);
+  border-radius: var(--r-md);
+  color: var(--amber-2);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-ui);
+}
+
+.mdl-warn-list li + li {
+  margin-top: var(--sp-1);
+  padding-top: var(--sp-1);
+  border-top: 1px solid color-mix(in srgb, var(--amber-2) 18%, transparent);
+}
+
+.mdl-warn-block {
+  margin-top: var(--sp-3);
+}
+
+.mdl-warn-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.mdl-warn-head .plate {
+  color: var(--amber-2);
+}
+
+.mdl-warn-strip {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--signal-wash);
+  border: 1px solid color-mix(in srgb, var(--signal) 34%, transparent);
+  border-radius: var(--r-md);
+  color: var(--signal);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-ui);
+}
+
+.mdl-warn-strip .icon {
+  margin-top: 2px;
+}
+
+.mdl-inline-error {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--rust-wash);
+  border: 1px solid color-mix(in srgb, var(--rust) 34%, transparent);
+  border-radius: var(--r-md);
+  color: var(--rust);
+  font-size: var(--fs-sm);
+}
+
+/* ---------------------------- curl import -------------------------- */
+
+.mdl-drop {
+  border: 1px dashed transparent;
+  border-radius: var(--r-md);
+  transition: border-color var(--dur-1) var(--ease);
+}
+
+.mdl-drop.is-dragging {
+  border-color: var(--signal);
+}
+
+.mdl-curl-input {
+  min-height: 168px;
+  background: var(--well);
+  resize: vertical;
+  white-space: pre;
+  overflow-wrap: normal;
+  overflow-x: auto;
+}
+
+.mdl-drop-hint {
+  margin-top: var(--sp-1);
+  font-size: var(--fs-xs);
+  color: var(--faint);
+}
+
+.mdl-preview {
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--edge-soft);
+}
+
+.mdl-preview-spinner {
+  margin-left: var(--sp-1);
+}
+
+.mdl-preview-line {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.mdl-method {
+  background: transparent;
+  padding: 0;
+}
+
+.mdl-preview-url {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--bone);
+}
+
+.mdl-preview-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1);
+  margin-top: var(--sp-2);
+}
+
+.mdl-preview-empty {
+  font-size: var(--fs-sm);
+  color: var(--faint);
+}
+
+/* ---------------------------- curl export -------------------------- */
+
+.mdl-opts {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--edge-soft);
+}
+
+.mdl-opt {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--mute);
+  cursor: pointer;
+}
+
+.mdl-opt:hover {
+  color: var(--bone);
+}
+
+.mdl-curl-out {
+  height: 300px;
+  margin-top: var(--sp-3);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+/* ---------------------------- confirm ------------------------------ */
+
+.mdl-confirm {
+  font-size: var(--fs-md);
+  line-height: var(--lh-ui);
+  color: var(--bone);
+}
+
+/* ---------------------------- variables ---------------------------- */
+
+.mdl-vars {
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.mdl-vars-list {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--well);
+  border-right: 1px solid var(--edge);
+}
+
+.mdl-vars-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: none;
+  height: var(--h-row);
+  padding: 0 var(--sp-1) 0 var(--sp-3);
+  border-bottom: 1px solid var(--edge);
+}
+
+.mdl-vars-items {
+  list-style: none;
+  margin: 0;
+  padding: var(--sp-1) 0;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.mdl-vars-item {
+  display: flex;
+  align-items: center;
+  min-height: var(--h-row);
+  padding-right: var(--sp-1);
+  border-left: 2px solid transparent;
+  transition: background var(--dur-1) var(--ease);
+}
+
+.mdl-vars-item:hover {
+  background: var(--rail);
+}
+
+.mdl-vars-item.is-selected {
+  background: var(--rail);
+  border-left-color: var(--signal);
+}
+
+.mdl-vars-item.is-editing {
+  padding: 0 var(--sp-2);
+}
+
+.mdl-vars-pick {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0 var(--sp-2);
+  height: var(--h-row);
+  color: var(--mute);
+  font-size: var(--fs-ui);
+  text-align: left;
+  transition: color var(--dur-1) var(--ease);
+}
+
+.mdl-vars-item.is-selected .mdl-vars-pick,
+.mdl-vars-pick:hover {
+  color: var(--bone);
+}
+
+.mdl-vars-pick:focus-visible {
+  outline-offset: -2px;
+}
+
+.mdl-vars-count {
+  margin-left: auto;
+  font-size: var(--fs-xs);
+  color: var(--faint);
+}
+
+.mdl-vars-actions {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  opacity: 0;
+  transition: opacity var(--dur-1) var(--ease);
+}
+
+.mdl-vars-item:hover .mdl-vars-actions,
+.mdl-vars-item:focus-within .mdl-vars-actions {
+  opacity: 1;
+}
+
+.mdl-vars-confirm {
+  flex: none;
+  padding: var(--sp-3);
+  border-top: 1px solid var(--edge);
+  background: var(--chassis-2);
+  font-size: var(--fs-sm);
+  color: var(--bone);
+}
+
+.mdl-vars-confirm-warn {
+  margin-top: var(--sp-1);
+  font-size: var(--fs-xs);
+  color: var(--amber-2);
+}
+
+.mdl-vars-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+}
+
+.mdl-vars-pane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.mdl-vars-pane-head {
+  flex: none;
+  padding: var(--sp-3) var(--sp-3) var(--sp-2);
+  border-bottom: 1px solid var(--edge-soft);
+}
+
+.mdl-vars-pane-head h3 {
+  color: var(--bone);
+}
+
+.mdl-vars-precedence {
+  margin-top: var(--sp-1);
+  font-size: var(--fs-sm);
+  color: var(--mute);
+  line-height: var(--lh-ui);
+}
+
+.mdl-vars-table {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.mdl-vars-table > .kvtable {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* ---------------------------- dynamic reference -------------------- */
+
+.mdl-dyn {
+  flex: none;
+  border-top: 1px solid var(--edge);
+  background: var(--chassis-2);
+}
+
+.mdl-dyn-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  padding: 0 var(--sp-2) 0 0;
+}
+
+.mdl-dyn-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: 1 1 auto;
+  min-width: 0;
+  height: var(--h-row);
+  padding: 0 var(--sp-3);
+  color: var(--mute);
+  transition: color var(--dur-1) var(--ease);
+}
+
+.mdl-dyn-toggle:hover {
+  color: var(--bone);
+}
+
+.mdl-dyn-toggle:focus-visible {
+  outline-offset: -2px;
+}
+
+.mdl-dyn-count {
+  font-size: var(--fs-xs);
+  color: var(--faint);
+}
+
+.mdl-dyn-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--sp-3) var(--sp-2);
+  max-height: 168px;
+}
+
+.mdl-dyn-list li {
+  display: grid;
+  grid-template-columns: minmax(140px, auto) minmax(0, 1fr) minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--sp-3);
+  padding: 3px 0;
+  border-bottom: 1px solid var(--edge-soft);
+}
+
+.mdl-dyn-list li:last-child {
+  border-bottom: 0;
+}
+
+.mdl-dyn-token {
+  justify-self: start;
+  padding: 1px 4px;
+  border-radius: 2px;
+  background: var(--violet-wash);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--violet) 34%, transparent);
+  color: var(--violet);
+  font-size: var(--fs-xs);
+}
+
+.mdl-dyn-token:hover {
+  background: color-mix(in srgb, var(--violet) 22%, transparent);
+}
+
+.mdl-dyn-note {
+  font-size: var(--fs-xs);
+  color: var(--mute);
+}
+
+.mdl-dyn-example {
+  font-size: var(--fs-xs);
+  color: var(--faint);
+}
+
+/* ---------------------------- import report ------------------------ */
+
+.mdl-imp + .mdl-imp {
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--edge-soft);
+}
+
+.mdl-imp-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.mdl-imp-name {
+  min-width: 0;
+  font-size: var(--fs-md);
+  color: var(--bone);
+}
+
+.mdl-imp-stats {
+  display: flex;
+  gap: var(--sp-5);
+  margin-top: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--well);
+  border: 1px solid var(--edge-soft);
+  border-radius: var(--r-md);
+}
+
+.mdl-imp-stats dd {
+  margin-top: 2px;
+  font-size: var(--fs-lg);
+  color: var(--bone);
+}
+
+.mdl-imp-clean {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  color: var(--jade);
+  font-size: var(--fs-sm);
+}
+
+/* ---------------------------- bare icon buttons -------------------- */
+
+/* .btn-icon on its own is only a size; inside a dialog every control has to
+   react to the pointer, so give it the ghost treatment here. */
+.modal .btn-icon:not(.btn) {
+  display: inline-grid;
+  place-items: center;
+  border-radius: var(--r-sm);
+  color: var(--mute);
+  transition:
+    background var(--dur-1) var(--ease),
+    color var(--dur-1) var(--ease);
+}
+
+.modal .btn-icon:not(.btn):not(.is-danger):hover:not(:disabled) {
+  background: var(--rail-hi);
+  color: var(--bone);
+}
+
+.modal .btn-icon:not(.btn):disabled {
+  opacity: 0.45;
+}
+
+/* ------------------------- collection dialog ----------------------- */
+
+.mdl-tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: var(--sp-3);
+}
+
+.mdl-tab {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  color: var(--mute);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-1) var(--ease),
+    color var(--dur-1) var(--ease);
+}
+
+.mdl-tab:hover {
+  background: var(--rail-hi);
+  color: var(--bone);
+}
+
+.mdl-tab.is-on {
+  background: color-mix(in srgb, var(--signal) 14%, transparent);
+  border-color: color-mix(in srgb, var(--signal) 34%, transparent);
+  color: var(--signal);
+}
+
+.mdl-tab:focus-visible {
+  outline: 1px solid var(--signal);
+  outline-offset: 1px;
+}
+
+/* Keeps the footer height stable when its control does not apply. */
+.mdl-foot-field.is-hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.mdl-collpane {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: var(--sp-3) var(--sp-4) var(--sp-4);
+}
+
+.mdl-collpane-lead {
+  margin: 0 0 var(--sp-3);
+  color: var(--mute);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+}
+
+.mdl-collpane .rq-scroll {
+  overflow: visible;
+  padding: 0;
+}
+
+.mdl-collpane .mdl-vars-table {
+  min-height: 180px;
+}
+
+/* An explicit display on .mdl-vars would otherwise beat [hidden]. */
+.mdl-vars[hidden] {
+  display: none;
+}

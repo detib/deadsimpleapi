@@ -1,0 +1,930 @@
+/* ------------------------------------------------------------------ */
+/* Middle panel: the request editor.                                   */
+/*                                                                     */
+/* Three fixed decks - the URL bar, the warning strip and the tab       */
+/* strip - over one scrolling well. The panel itself never scrolls, so  */
+/* the Send button and the resolved URL stay on screen while you work   */
+/* your way down a long header table.                                   */
+/* ------------------------------------------------------------------ */
+
+.rqpanel {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.rq-gone {
+  flex: 1 1 auto;
+}
+
+/* Screen-reader-only text, for state a sighted user reads as a dot. */
+.rq-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------------------------- URL bar ------------------------------ */
+
+.rq-bar-wrap {
+  flex: none;
+  background: var(--chassis-2);
+  border-bottom: 1px solid var(--edge);
+}
+
+.rq-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3) var(--sp-1);
+}
+
+/* No colour here: methodClass() paints the text and must win. */
+.rq-method {
+  flex: none;
+  width: 112px;
+  font-weight: 600;
+}
+
+.rq-method-free {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+  width: 112px;
+}
+
+.rq-method-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-weight: 600;
+  text-transform: none;
+}
+
+.rq-method-back {
+  flex: none;
+}
+
+/* The URL and the credential fields are recessed wells around a bare
+   VarInput; the ring belongs to the well, not to the input inside it. */
+.rq-url,
+.rq-varfield {
+  background: var(--well);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-md);
+  transition: border-color var(--dur-1) var(--ease);
+}
+
+.rq-url {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: var(--h-input);
+}
+
+.rq-url:hover,
+.rq-varfield:hover {
+  border-color: var(--faint);
+}
+
+.rq-url:has(.varinput-field:focus-visible),
+.rq-varfield:has(.varinput-field:focus-visible) {
+  border-color: var(--signal);
+  outline: 1px solid var(--signal);
+  outline-offset: -1px;
+}
+
+.rq-url .varinput-field:focus-visible,
+.rq-varfield .varinput-field:focus-visible {
+  outline: none;
+}
+
+.rq-url .varinput-field,
+.rq-url .varinput-mirror {
+  height: 100%;
+  padding: 0 var(--sp-2);
+  line-height: calc(var(--h-input) - 2px);
+}
+
+.rq-varfield .varinput-field,
+.rq-varfield .varinput-mirror {
+  padding: 0 var(--sp-2);
+  line-height: calc(var(--h-input) - 2px);
+}
+
+.rq-send {
+  flex: none;
+  min-width: 92px;
+}
+
+.rq-more {
+  flex: none;
+}
+
+/* ---------------------------- resolved line ------------------------ */
+
+.rq-resolved {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  min-width: 0;
+  padding: 0 var(--sp-3) var(--sp-2);
+}
+
+.rq-resolved-label {
+  flex: none;
+  color: var(--faint);
+}
+
+.rq-resolved-url,
+.rq-resolved-empty {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--fs-xs);
+  color: var(--faint);
+  user-select: text;
+}
+
+.rq-resolved-empty {
+  font-style: italic;
+}
+
+/* ---------------------------- save-as strip ------------------------ */
+
+.rq-saveas {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--rail);
+  border-top: 1px solid var(--edge-soft);
+}
+
+.rq-saveas-label {
+  flex: none;
+  color: var(--faint);
+}
+
+.rq-saveas-name {
+  flex: 1 1 180px;
+  min-width: 140px;
+}
+
+.rq-saveas-select {
+  flex: 0 1 176px;
+  min-width: 120px;
+}
+
+/* ---------------------------- issue strip -------------------------- */
+
+.rq-issues {
+  flex: none;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-3);
+  background: color-mix(in srgb, var(--amber-2) 12%, transparent);
+  border-bottom: 1px solid var(--edge);
+  color: var(--amber-2);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-ui);
+}
+
+.rq-issues-icon {
+  flex: none;
+  margin-top: 2px;
+}
+
+.rq-issues-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--sp-4);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---------------------------- tab strip ---------------------------- */
+
+.rq-tabs {
+  flex: none;
+  padding: 0 var(--sp-2);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.rq-tabs::-webkit-scrollbar {
+  height: 0;
+}
+
+.rq-count {
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--faint);
+}
+
+.tab[aria-selected='true'] .rq-count {
+  color: var(--mute);
+}
+
+.rq-dot {
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--signal);
+}
+
+/* ---------------------------- panes -------------------------------- */
+
+.rq-pane {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.rq-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding-bottom: var(--sp-6);
+}
+
+.rq-fill {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* ---------------------------- sections ----------------------------- */
+
+.rq-section {
+  padding: var(--sp-3) var(--sp-3) 0;
+}
+
+.rq-section-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  padding-bottom: var(--sp-2);
+}
+
+.rq-section-head h3 {
+  margin: 0;
+}
+
+.rq-section-note {
+  margin: 0;
+  color: var(--faint);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-ui);
+}
+
+.rq-tokens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1);
+  padding-top: 2px;
+}
+
+.rq-note {
+  margin: 0;
+  padding: var(--sp-2) 0;
+  color: var(--mute);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-ui);
+}
+
+.rq-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  padding-top: var(--sp-3);
+}
+
+.rq-warn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: var(--sp-2) 0 0;
+  color: var(--amber-2);
+  font-size: var(--fs-xs);
+}
+
+/* Tables sit on their own surface. The tonal step off the panel is the
+   separation; an outline as well would just be a second boundary. */
+.rq-section .kvtable,
+.rq-mp {
+  background: var(--well);
+  border: 0;
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.rq-section .kvtable-body > .kvtable-row:last-child {
+  border-bottom: 0;
+}
+
+/* ---------------------------- body tab ----------------------------- */
+
+.rq-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.rq-modes {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--edge-soft);
+}
+
+.rq-mode,
+.rq-seg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  height: 22px;
+  padding: 0 var(--sp-2);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  color: var(--mute);
+  font-family: var(--font-plate);
+  font-size: var(--fs-plate);
+  font-weight: 600;
+  letter-spacing: var(--ls-plate);
+  line-height: 1;
+  text-transform: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--dur-1) var(--ease),
+    border-color var(--dur-1) var(--ease),
+    color var(--dur-1) var(--ease);
+}
+
+.rq-mode:hover,
+.rq-seg:hover {
+  background: var(--rail);
+  color: var(--bone);
+}
+
+.rq-mode.is-on,
+.rq-seg.is-on {
+  background: var(--signal-wash);
+  border-color: var(--signal-wash-2);
+  color: var(--signal);
+}
+
+.rq-mode:focus-visible,
+.rq-seg:focus-visible {
+  outline-offset: -1px;
+}
+
+.rq-segs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding-bottom: var(--sp-2);
+}
+
+/* ---------------------------- editor ------------------------------- */
+
+.rq-editor-wrap {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.rq-toolbar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--edge-soft);
+}
+
+.rq-spacer {
+  flex: 1 1 auto;
+}
+
+.rq-bytes {
+  flex: none;
+  font-size: var(--fs-xs);
+  color: var(--faint);
+}
+
+.rq-parse-error {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: var(--sp-1) var(--sp-3);
+  background: var(--rust-wash);
+  color: var(--rust);
+  font-size: var(--fs-xs);
+}
+
+.rq-editor {
+  flex: 1 1 auto;
+  min-height: 0;
+  border-top: 1px solid var(--edge-soft);
+}
+
+/* ---------------------------- multipart ---------------------------- */
+
+.rq-mp {
+  --mp-cols: 26px minmax(110px, 1fr) 92px minmax(180px, 1.8fr) minmax(104px, 0.9fr) 32px;
+  display: flex;
+  flex-direction: column;
+}
+
+.rq-mp-head,
+.rq-mp-row {
+  display: grid;
+  grid-template-columns: var(--mp-cols);
+  align-items: stretch;
+  border-bottom: 1px solid var(--edge-soft);
+}
+
+.rq-mp-head {
+  background: var(--chassis-2);
+  border-bottom-color: var(--edge);
+}
+
+.rq-mp-head .rq-mp-cell {
+  padding: 5px 6px;
+  color: var(--mute);
+}
+
+.rq-mp-row {
+  transition: background var(--dur-1) var(--ease);
+}
+
+.rq-mp-row:last-child {
+  border-bottom: 0;
+}
+
+.rq-mp-row:hover {
+  background: color-mix(in srgb, var(--rail) 40%, transparent);
+}
+
+.rq-mp-row.is-off .kv-input,
+.rq-mp-row.is-off .varinput-field,
+.rq-mp-row.is-off .rq-file-meta {
+  color: var(--faint);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--faint) 60%, transparent);
+}
+
+.rq-mp-row.is-missing {
+  background: var(--rust-wash);
+}
+
+.rq-mp-cell {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  border-right: 1px solid var(--edge-soft);
+}
+
+.rq-mp-cell:last-child {
+  border-right: 0;
+}
+
+.rq-mp-toggle {
+  justify-content: center;
+}
+
+.rq-mp-kind {
+  gap: 2px;
+  padding: 0 var(--sp-1);
+}
+
+.rq-mp-actions {
+  justify-content: flex-end;
+  padding-right: 4px;
+  opacity: 0;
+  transition: opacity var(--dur-1) var(--ease);
+}
+
+.rq-mp-row:hover .rq-mp-actions,
+.rq-mp-row:focus-within .rq-mp-actions {
+  opacity: 1;
+}
+
+.rq-mp-row.is-draft .kv-input::placeholder {
+  color: color-mix(in srgb, var(--faint) 70%, transparent);
+}
+
+.rq-file {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  min-width: 0;
+  padding: 4px 6px;
+}
+
+.rq-file-meta {
+  min-width: 0;
+  color: var(--mute);
+  font-size: var(--fs-xs);
+}
+
+.rq-file-empty {
+  color: var(--faint);
+  font-style: italic;
+}
+
+/* ---------------------------- binary body -------------------------- */
+
+.rq-filecard {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: var(--sp-1) var(--sp-3);
+  margin: 0;
+  padding: var(--sp-3);
+  background: var(--well);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-md);
+}
+
+.rq-filecard.is-missing {
+  border-color: var(--rust);
+}
+
+.rq-filecard dt {
+  align-self: center;
+  color: var(--faint);
+}
+
+.rq-filecard dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.rq-filecard-path {
+  color: var(--mute);
+  font-size: var(--fs-xs);
+}
+
+/* ---------------------------- graphql ------------------------------ */
+
+.rq-gql {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.rq-gql-op {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.rq-gql-op-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 340px;
+}
+
+.rq-gql-pane {
+  display: flex;
+  flex-direction: column;
+  flex: 1.6 1 0;
+  min-height: 0;
+}
+
+.rq-gql-vars {
+  flex: 1 1 0;
+  border-top: 1px solid var(--edge);
+}
+
+.rq-gql-label {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: none;
+  margin: 0;
+  padding: var(--sp-1) var(--sp-3);
+  background: var(--chassis-2);
+}
+
+/* Inside the label it is an inline note, not a full-width banner. */
+.rq-gql-label .rq-parse-error {
+  padding: 0;
+  background: transparent;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* ---------------------------- headers tab -------------------------- */
+
+.rq-disclosure {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  padding: var(--sp-2) 0;
+  background: transparent;
+  border: 0;
+  color: var(--mute);
+  text-align: left;
+  cursor: pointer;
+  transition: color var(--dur-1) var(--ease);
+}
+
+.rq-disclosure:hover {
+  color: var(--bone);
+}
+
+.rq-disclosure:hover .plate {
+  color: var(--bone);
+}
+
+.rq-disclosure:focus-visible {
+  outline-offset: -2px;
+}
+
+.rq-inherited {
+  background: var(--well);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.rq-inherited td {
+  font-size: var(--fs-xs);
+}
+
+.rq-computed {
+  color: var(--faint);
+  font-style: italic;
+}
+
+.rq-source {
+  white-space: nowrap;
+  color: var(--faint);
+  font-family: var(--font-ui);
+  font-size: var(--fs-xs);
+}
+
+.rq-replaced {
+  color: var(--amber-2);
+}
+
+.rq-inherited tr.is-overridden td:first-child,
+.rq-inherited tr.is-overridden td:nth-child(2) {
+  color: var(--faint);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--faint) 60%, transparent);
+}
+
+/* ---------------------------- auth tab ----------------------------- */
+
+.rq-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  max-width: 640px;
+}
+
+.rq-field {
+  display: grid;
+  grid-template-columns: 116px minmax(0, 1fr);
+  gap: var(--sp-1) var(--sp-3);
+  align-items: center;
+}
+
+.rq-field-label {
+  align-self: center;
+}
+
+.rq-field-control {
+  min-width: 0;
+}
+
+.rq-field-hint {
+  grid-column: 2;
+  color: var(--faint);
+  font-size: var(--fs-xs);
+}
+
+.rq-reveal {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+.rq-reveal > :first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.rq-radios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+}
+
+.rq-radio {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-sm);
+  color: var(--bone);
+  cursor: pointer;
+}
+
+.rq-radio input {
+  flex: none;
+  cursor: pointer;
+}
+
+.rq-generated {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--well);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-md);
+}
+
+.rq-generated-name {
+  flex: none;
+  color: var(--trace);
+}
+
+.rq-generated-value {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--bone);
+  user-select: text;
+}
+
+/* ---------------------------- settings tab ------------------------- */
+
+.rq-settings {
+  display: flex;
+  flex-direction: column;
+}
+
+.rq-set-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 148px 196px;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--edge-soft);
+}
+
+.rq-set-row:last-child {
+  border-bottom: 0;
+}
+
+.rq-set-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.rq-set-name {
+  color: var(--bone);
+  font-size: var(--fs-sm);
+}
+
+.rq-set-row.is-override .rq-set-name {
+  color: var(--signal);
+}
+
+.rq-set-hint {
+  color: var(--faint);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-ui);
+}
+
+.rq-set-row.is-warn .rq-set-hint {
+  color: var(--rust);
+}
+
+.rq-set-control {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.rq-set-state {
+  display: flex;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+/* A value can be a proxy URL, which must not be silkscreened uppercase. */
+.rq-set-inherit {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--faint);
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.rq-num {
+  width: 108px;
+}
+
+.rq-proxy {
+  width: 100%;
+}
+
+/* ---------------------------- docs tab ----------------------------- */
+
+.rq-docs {
+  flex: 1 1 auto;
+  display: flex;
+  min-height: 0;
+  padding: var(--sp-3);
+}
+
+.rq-docs-area {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  resize: none;
+  background: var(--well);
+  font-family: var(--font-ui);
+  font-size: var(--fs-ui);
+  line-height: var(--lh-ui);
+}
+
+/* The method control cannot be a badge - it is a native select - so it
+   takes the verb's hue directly, from the same --m the badges read. */
+.rq-method,
+.rq-method-input {
+  color: var(--m, var(--bone));
+  background: color-mix(in srgb, var(--m, var(--rail)) 12%, var(--rail));
+  font-weight: 600;
+}
+
+.rq-method:hover,
+.rq-method-input:hover {
+  background: color-mix(in srgb, var(--m, var(--rail)) 20%, var(--rail));
+}
+
+/* Sends you to the thing the sentence just named. */
+.rq-note-link {
+  margin-left: var(--sp-2);
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--signal);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.rq-note-link:hover {
+  color: var(--signal-hi);
+}
+
+.rq-note-link:focus-visible {
+  outline: 1px solid var(--signal);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}

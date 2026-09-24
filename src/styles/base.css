@@ -1,0 +1,243 @@
+/* ==================================================================== */
+/* Base: fonts, reset, chrome. Load order is tokens -> base -> anything  */
+/* else; tokens is pulled in here so importing base alone is enough.     */
+/* ==================================================================== */
+
+@import './tokens.css';
+
+@import '@fontsource/ibm-plex-sans/400.css';
+@import '@fontsource/ibm-plex-sans/500.css';
+@import '@fontsource/ibm-plex-sans/600.css';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import '@fontsource/ibm-plex-mono/500.css';
+
+/* -------------------------------------------------------------------- */
+/* Reset                                                                 */
+/* -------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--chassis);
+  color: var(--bone);
+  font-family: var(--font-ui);
+  font-size: var(--fs-ui);
+  font-weight: 400;
+  line-height: var(--lh-ui);
+  /* Condensed and mono must never be faux-bolded; it destroys the
+     silkscreen look and the monospace advance width. */
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  accent-color: var(--signal);
+  /* Chrome, not a document: no I-beam over labels and panel furniture. */
+  cursor: default;
+  /* A custom titlebar opts back in with -webkit-app-region: drag. */
+  -webkit-app-region: no-drag;
+}
+
+/* Zero specificity so the app shell can size its own mount however it
+   likes; this only stops a full-height layout collapsing by default. */
+:where(#root) {
+  height: 100%;
+  isolation: isolate;
+}
+
+input,
+textarea,
+[contenteditable='true'] {
+  cursor: text;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+::placeholder {
+  color: var(--faint);
+  opacity: 1;
+}
+
+img,
+svg,
+video,
+canvas {
+  display: block;
+}
+
+img,
+video {
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: 600;
+  line-height: var(--lh-tight);
+}
+
+a {
+  color: var(--trace);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code,
+pre,
+kbd,
+samp {
+  font-family: var(--font-data);
+  font-size: var(--fs-data);
+}
+
+pre {
+  margin: 0;
+  white-space: pre;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+hr {
+  border: 0;
+  height: 1px;
+  background: var(--edge-soft);
+}
+
+[hidden] {
+  display: none;
+}
+
+/* -------------------------------------------------------------------- */
+/* Selection and focus                                                   */
+/* -------------------------------------------------------------------- */
+
+::selection {
+  background: var(--selection);
+  color: var(--bone);
+}
+
+:focus-visible {
+  outline: var(--ring-w) solid var(--signal);
+  outline-offset: var(--ring-offset);
+}
+
+/* Mouse focus on a control should be silent; keyboard focus never is. */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* -------------------------------------------------------------------- */
+/* Scrollbars                                                            */
+/*                                                                       */
+/* Chromium ignores the ::-webkit-scrollbar pseudo-elements on any        */
+/* element whose scrollbar-width/scrollbar-color is not `auto`, and       */
+/* scrollbar-color inherits - so setting it anywhere near the root would  */
+/* disable the styled thumb everywhere. The two are declared as mutually  */
+/* exclusive branches instead: legacy pseudo-elements where they exist    */
+/* (which is what Electron runs), standard properties otherwise.          */
+/* -------------------------------------------------------------------- */
+
+@supports selector(::-webkit-scrollbar) {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--edge);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--faint);
+    background-clip: padding-box;
+  }
+
+  ::-webkit-scrollbar-thumb:active {
+    background: var(--mute);
+    background-clip: padding-box;
+  }
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--edge) transparent;
+  }
+}
+
+/* -------------------------------------------------------------------- */
+/* Reduced motion                                                        */
+/*                                                                       */
+/* Every transition and animation in this design system is authored with */
+/* var(--dur-1) / var(--dur-2), so zeroing the two tokens stops all of    */
+/* them without a single !important. The universal rule below is the      */
+/* fallback for third-party CSS (CodeMirror) that we do not author.       */
+/* -------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-1: 0ms;
+    --dur-2: 0ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms;
+    animation-delay: 0ms;
+    animation-iteration-count: 1;
+    transition-duration: 1ms;
+    transition-delay: 0ms;
+    scroll-behavior: auto;
+  }
+}

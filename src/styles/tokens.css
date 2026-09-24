@@ -1,0 +1,245 @@
+/* ==================================================================== */
+/* Deadsimple design tokens                                             */
+/*                                                                      */
+/* A quiet desk. The surface is a soft greige - light, never white - and */
+/* the chrome is meant to disappear: lines are rare, labels are sentence */
+/* case, and colour is spent almost entirely on data rather than on the  */
+/* interface around it. One muted accent carries focus, the active tab   */
+/* and the send action; nothing else competes with the response.        */
+/*                                                                      */
+/* Both themes declare exactly the same property names, so nothing       */
+/* downstream ever has to branch on the theme.                          */
+/* ==================================================================== */
+
+/* -------------------------------------------------------------------- */
+/* Light theme (default)                                                 */
+/* -------------------------------------------------------------------- */
+
+:root {
+  color-scheme: light;
+
+  /* Surfaces. Chrome sits darker than content, so panels read as paper
+     resting on a desk and need no border to be legible. */
+  --chassis: #E5E5E1;
+  --chassis-2: #DEDEDA;
+  --well: #F2F2EF;
+  --rail: #EBEBE7;
+  --rail-hi: #E0E0DB;
+
+  /* Borders. Deliberately close to the surfaces they divide: a line here
+     should be findable, not noticeable. */
+  --edge: #D2D2CD;
+  --edge-soft: #DEDED9;
+
+  /* Text */
+  --bone: #2A2C2E;
+  --mute: #5F6367;
+  --faint: #7C8085;
+
+  /* The accent: focus rings, the active tab, the send action. Muted on
+     purpose - it should read as a considered choice, not a highlighter. */
+  /* A saturated indigo, not a slate. On a light ground brightness has to
+     come from chroma rather than lightness: anything lighter stops being
+     readable as the active tab's label. */
+  --signal: #3538CD;
+  --signal-dim: #B9BAF0;
+  --signal-solid: #3538CD;
+  --signal-hi: #262AA8;
+  --on-signal: #FFFFFF;
+
+  /* Carriers of meaning. The chrome is quiet so that these can be vivid:
+     colour in this app should always be information. Every one is near
+     full saturation and still clears 4.5:1 against --well. */
+  --trace: #0A62B4;
+  --violet: #6D28D9;
+  --jade: #00713A;
+  --rust: #C4231A;
+  --amber-2: #9A5300;
+
+  --scrim: rgba(42, 44, 46, 0.30);
+  --shadow-modal: 0 12px 32px rgba(42, 44, 46, 0.16);
+
+  /* Caret for native <select>. The stroke is baked into the data URI, so it
+     cannot use currentColor and has to be themed here. */
+  --caret: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M1 1.25L5 4.75L9 1.25' fill='none' stroke='%236B6F73' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+}
+
+/* -------------------------------------------------------------------- */
+/* Dark theme                                                            */
+/* -------------------------------------------------------------------- */
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --chassis: #1C1E21;
+  --chassis-2: #212429;
+  --well: #16181B;
+  --rail: #24272C;
+  --rail-hi: #2C3036;
+
+  --edge: #2E3238;
+  --edge-soft: #26292E;
+
+  --bone: #DCDEE1;
+  --mute: #949AA1;
+  --faint: #757A81;
+
+  --signal: #8B93FF;
+  --signal-dim: #3B3F7A;
+  --signal-solid: #9AA1FF;
+  --signal-hi: #AEB4FF;
+  --on-signal: #10131F;
+
+  --trace: #4FADF7;
+  --violet: #B18AFF;
+  --jade: #33CE86;
+  --rust: #FF7264;
+  --amber-2: #FFAE33;
+
+  --scrim: rgba(8, 10, 12, 0.58);
+  --shadow-modal: 0 12px 32px rgba(0, 0, 0, 0.42);
+
+  --caret: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M1 1.25L5 4.75L9 1.25' fill='none' stroke='%238B9097' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+}
+
+/* -------------------------------------------------------------------- */
+/* Theme-independent tokens                                              */
+/* -------------------------------------------------------------------- */
+
+:root {
+  /* --- Derived washes -------------------------------------------------
+     These resolve against :root, where --signal is defined, so they follow
+     the active theme. Note the limit: a custom property's var() references
+     are substituted in the scope that DECLARES it, not where it is used, so
+     nothing here can depend on a property an element sets on itself. */
+  --signal-wash: color-mix(in srgb, var(--signal) 12%, transparent);
+  --signal-wash-2: color-mix(in srgb, var(--signal) 20%, transparent);
+  --rust-wash: color-mix(in srgb, var(--rust) 10%, transparent);
+  --violet-wash: color-mix(in srgb, var(--violet) 10%, transparent);
+  --selection: color-mix(in srgb, var(--signal) 22%, transparent);
+
+  /* --- Status ---------------------------------------------------------
+     Numeric names are canonical; the spelled-out aliases exist because the
+     helper classes read better as .st-server-error than .st-5xx. */
+  --status-1xx: var(--trace);
+  --status-2xx: var(--jade);
+  --status-3xx: var(--violet);
+  --status-4xx: var(--amber-2);
+  --status-5xx: var(--rust);
+  --status-info: var(--status-1xx);
+  --status-success: var(--status-2xx);
+  --status-redirect: var(--status-3xx);
+  --status-client-error: var(--status-4xx);
+  --status-server-error: var(--status-5xx);
+  --status-none: var(--faint);
+
+  /* --- Methods --------------------------------------------------------
+     Every verb gets its own hue and is rendered as a filled badge, so the
+     method is legible from across the tree without reading the word. */
+  --method-get: var(--trace);
+  --method-post: var(--jade);
+  --method-put: var(--amber-2);
+  --method-patch: var(--violet);
+  --method-delete: var(--rust);
+  --method-head: var(--mute);
+  --method-options: var(--mute);
+  /* HTTP_METHODS in shared/types.ts also lists TRACE and QUERY; without their
+     own entries those two would fall through to inherited text colour while
+     every other known verb is tinted. */
+  --method-trace: var(--faint);
+  --method-query: var(--faint);
+  --method-other: var(--faint);
+
+  /* --- Timing phases (the waveform) ----------------------------------- */
+  --phase-dns: var(--faint);
+  --phase-tcp: var(--trace);
+  --phase-tls: var(--violet);
+  --phase-wait: var(--signal);
+  --phase-download: var(--jade);
+
+  /* --- Syntax (editors, response body) -------------------------------- */
+  --syn-key: var(--trace);
+  --syn-string: var(--jade);
+  --syn-number: var(--violet);
+  --syn-bool: var(--amber-2);
+  --syn-null: var(--faint);
+  --syn-punct: var(--faint);
+  --syn-comment: var(--faint);
+  --syn-invalid: var(--rust);
+  --syn-var: var(--violet);
+
+  /* --- Type -----------------------------------------------------------
+     Two faces, not three. The condensed display face has been retired:
+     tracked uppercase labels on every panel, tab and column header were
+     the loudest thing in the interface. --font-plate is kept as an alias
+     so the call sites downstream do not all have to change. */
+  --font-ui: 'IBM Plex Sans', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --font-plate: var(--font-ui);
+  --font-data: 'IBM Plex Mono', 'Cascadia Mono', 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+  /* AppSettings.uiScale writes this on the root element. Type and control
+     heights track it; the 4px spacing grid deliberately does not. */
+  --ui-scale: 1;
+
+  --fs-xs: calc(11px * var(--ui-scale));
+  --fs-sm: calc(12px * var(--ui-scale));
+  --fs-ui: calc(13px * var(--ui-scale));
+  --fs-md: calc(14px * var(--ui-scale));
+  --fs-lg: calc(16px * var(--ui-scale));
+  --fs-data: calc(12.5px * var(--ui-scale));
+  --fs-plate: calc(11px * var(--ui-scale));
+  --fs-plate-lg: calc(12px * var(--ui-scale));
+
+  --lh-tight: 1.25;
+  --lh-ui: 1.5;
+  --lh-data: 1.55;
+  /* Was 0.08em of letter-spacing on uppercase labels. */
+  --ls-plate: 0;
+
+  /* --- Space, on a 4px grid ------------------------------------------- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-7: 32px;
+  --sp-8: 40px;
+
+  /* --- Radii. Softer than the old 3/4/6, which read as machined. ------ */
+  --r-sm: 4px;
+  --r-md: 5px;
+  --r-lg: 8px;
+
+  /* --- Fixed metrics --------------------------------------------------
+     Unchanged: the virtualised lists measure against these, and the brief
+     was to quieten the interface, not to loosen it. */
+  --h-row: round(calc(28px * var(--ui-scale)), 1px);
+  --h-input: round(calc(30px * var(--ui-scale)), 1px);
+  --h-bar: round(calc(38px * var(--ui-scale)), 1px);
+  --h-icon: round(calc(26px * var(--ui-scale)), 1px);
+  /* The two fixed rails of the app shell. Anything that overlays the
+     workbench positions itself between them. */
+  --h-titlebar: 34px;
+  --h-statusbar: 22px;
+
+  /* --- Focus ----------------------------------------------------------
+     A ring, not a slab: 1.5px of a muted accent is plenty on a light
+     ground and stops the interface flashing as you tab through it. */
+  --ring-w: 1.5px;
+  --ring-offset: 1px;
+
+  /* --- Motion --------------------------------------------------------- */
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --dur-1: 90ms;
+  --dur-2: 150ms;
+
+  /* --- Stacking ------------------------------------------------------- */
+  --z-sticky: 10;
+  --z-resizer: 20;
+  --z-dropdown: 100;
+  --z-menu: 200;
+  --z-modal: 300;
+  --z-tooltip: 400;
+  --z-toast: 500;
+}

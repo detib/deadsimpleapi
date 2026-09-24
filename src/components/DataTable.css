@@ -1,0 +1,917 @@
+/* ------------------------------------------------------------------ */
+/* The structure-detecting table.                                      */
+/*                                                                     */
+/* A recessed well of data behind a silkscreened header: hairline      */
+/* column rules, tabular figures, and one accent - the amber signal -  */
+/* reserved for sort, selection and active filters.                    */
+/* ------------------------------------------------------------------ */
+
+.dt {
+  /* DataTable.tsx repeats this arithmetic to size the virtual window, so
+     the two must stay in step: see ROW_BASE / HEAD_BASE there. */
+  --dt-row: round(calc(26px * var(--ui-scale, 1)), 1px);
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  background: var(--well);
+}
+
+.dt[data-density='compact'] {
+  --dt-row: round(calc(21px * var(--ui-scale, 1)), 1px);
+}
+
+.dt.is-resizing {
+  cursor: col-resize;
+  user-select: none;
+}
+
+.dt-gap {
+  flex: 1 1 auto;
+  min-width: var(--sp-2);
+}
+
+/* ---------------------------- toolbar ------------------------------ */
+
+.dt-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: none;
+  min-height: var(--h-bar);
+  padding: var(--sp-1) var(--sp-2);
+  background: var(--chassis-2);
+  border-bottom: 1px solid var(--edge);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.dt-src {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: 0 1 auto;
+  max-width: 30ch;
+  min-width: 0;
+  height: 22px;
+  padding: 0 var(--sp-2) 0 6px;
+  background: var(--rail);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-sm);
+  color: var(--bone);
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  cursor: pointer;
+  transition:
+    background var(--dur-1) var(--ease),
+    border-color var(--dur-1) var(--ease);
+}
+
+.dt-src:hover {
+  background: var(--rail-hi);
+  border-color: var(--faint);
+}
+
+.dt-src.is-static {
+  cursor: default;
+  background: transparent;
+  border-color: transparent;
+  color: var(--mute);
+}
+
+.dt-src .icon {
+  color: var(--mute);
+}
+
+.dt-counts {
+  flex: none;
+  color: var(--mute);
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.dt-dash {
+  padding-right: 5px;
+  color: var(--faint);
+}
+
+.dt-shown {
+  color: var(--signal);
+}
+
+/* ---------------------------- search ------------------------------- */
+
+.dt-search {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 0 1 220px;
+  min-width: 120px;
+  height: 24px;
+  padding: 0 var(--sp-2);
+  background: var(--well);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-md);
+  color: var(--faint);
+  transition: border-color var(--dur-1) var(--ease);
+}
+
+.dt-search:hover {
+  border-color: var(--faint);
+}
+
+/* The ring belongs to the well, not the bare input inside it. */
+.dt-search:has(.dt-search-input:focus-visible) {
+  border-color: var(--signal);
+  outline: 1px solid var(--signal);
+  outline-offset: -2px;
+}
+
+.dt-search-input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--bone);
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  outline: none;
+}
+
+.dt-search-input::placeholder {
+  color: var(--faint);
+}
+
+.dt-search-input::-webkit-search-cancel-button {
+  filter: grayscale(1);
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+/* ---------------------------- toolbar buttons ---------------------- */
+
+.dt-toolbar .btn {
+  flex: none;
+}
+
+.dt-toolbar .btn.is-on {
+  background: var(--rail-hi);
+  border-color: var(--faint);
+}
+
+.dt-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 14px;
+  padding: 0 4px;
+  margin-left: 2px;
+  background: var(--rail-hi);
+  border-radius: var(--r-sm);
+  color: var(--mute);
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  line-height: 1.3;
+}
+
+.dt-badge.is-on {
+  background: var(--signal-solid);
+  color: var(--on-signal);
+}
+
+.dt-split {
+  display: inline-flex;
+  flex: none;
+}
+
+.dt-split-main {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.dt-split-caret {
+  width: 22px;
+  padding: 0;
+  margin-left: -1px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.dt-selinfo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  flex: none;
+  padding-left: var(--sp-2);
+  border-left: 1px solid var(--edge);
+}
+
+.dt-selinfo .plate {
+  color: var(--signal);
+}
+
+/* ---------------------------- filter chips ------------------------- */
+
+.dt-chips {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  flex: none;
+  flex-wrap: wrap;
+  padding: 5px var(--sp-2);
+  background: var(--chassis);
+  border-bottom: 1px solid var(--edge);
+}
+
+.dt-chip {
+  max-width: 34ch;
+  padding-right: 3px;
+  background: var(--signal-wash);
+  border-color: var(--signal-dim);
+  color: var(--bone);
+}
+
+.dt-chip-x {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  color: var(--mute);
+  cursor: pointer;
+  transition:
+    background var(--dur-1) var(--ease),
+    color var(--dur-1) var(--ease);
+}
+
+.dt-chip-x:hover {
+  background: var(--rust-wash);
+  color: var(--rust);
+}
+
+.dt-chip-note {
+  color: var(--faint);
+}
+
+.dt-chip-err {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--rust);
+  font-size: var(--fs-xs);
+}
+
+/* ---------------------------- table body --------------------------- */
+
+.dt-main {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+.dt.is-narrow .dt-main {
+  flex-direction: column;
+}
+
+.dt-scroll {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  outline: none;
+  background: var(--well);
+  font-family: var(--font-data);
+  font-size: var(--fs-data);
+  line-height: 1.3;
+}
+
+.dt-grid {
+  position: relative;
+  font-family: var(--font-data);
+  font-size: var(--fs-data);
+}
+
+/* ---------------------------- header ------------------------------- */
+
+.dt-head {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: stretch;
+  background: var(--chassis-2);
+  border-bottom: 1px solid var(--edge);
+}
+
+.dt-th {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  flex: none;
+  min-width: 0;
+  background: inherit;
+  border-right: 1px solid var(--edge-soft);
+}
+
+.dt-th.is-pin {
+  position: sticky;
+  z-index: 1;
+  border-right-color: var(--edge);
+}
+
+.dt-th.is-sorted {
+  background: var(--rail);
+}
+
+.dt-th-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0 var(--sp-1) 0 6px;
+  background: transparent;
+  border: 0;
+  color: var(--mute);
+  font-family: var(--font-plate);
+  font-size: var(--fs-plate);
+  font-weight: 600;
+  letter-spacing: var(--ls-plate);
+  text-align: left;
+  text-transform: none;
+  cursor: pointer;
+  transition: color var(--dur-1) var(--ease);
+}
+
+.dt-th-btn:hover {
+  color: var(--bone);
+}
+
+.dt-th-btn:focus-visible {
+  outline-offset: -2px;
+}
+
+.dt-th.is-sorted .dt-th-btn {
+  color: var(--bone);
+}
+
+.dt-th-name {
+  flex: 0 1 auto;
+}
+
+.dt-th-type,
+.dt-th-pct {
+  flex: none;
+  color: var(--faint);
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: lowercase;
+}
+
+.dt-th-pct {
+  padding: 0 3px;
+  background: var(--rail);
+  border-radius: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.dt-th-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  flex: none;
+  margin-left: auto;
+  color: var(--signal);
+}
+
+.dt-th-sort b {
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.dt-th-menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 18px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: var(--faint);
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity var(--dur-1) var(--ease),
+    color var(--dur-1) var(--ease);
+}
+
+.dt-th:hover .dt-th-menu,
+.dt-th-menu:focus-visible {
+  opacity: 1;
+}
+
+.dt-th-menu:hover {
+  color: var(--bone);
+}
+
+.dt-th-menu:focus-visible {
+  outline-offset: -2px;
+}
+
+/* The drag target is wider than the rule it moves. */
+.dt-th-grip {
+  position: absolute;
+  top: 0;
+  right: -3px;
+  bottom: 0;
+  width: 7px;
+  z-index: var(--z-resizer);
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.dt-th-grip::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 3px;
+  width: 1px;
+  background: transparent;
+  transition: background var(--dur-1) var(--ease);
+}
+
+.dt-th-grip:hover::after,
+.dt-th-grip:focus-visible::after,
+.dt-th-grip[data-dragging='true']::after {
+  background: var(--signal);
+}
+
+.dt-th-grip:focus-visible {
+  outline-offset: -2px;
+}
+
+/* ---------------------------- rows --------------------------------- */
+
+.dt-row {
+  display: flex;
+  align-items: stretch;
+  height: var(--dt-row);
+  background: var(--well);
+  cursor: default;
+}
+
+.dt-row:hover {
+  background: var(--rail);
+}
+
+/* Opaque, not a wash: the sticky cells copy this colour and would let the
+   scrolled-under cells show through a translucent one. */
+.dt-row.is-sel {
+  background: color-mix(in srgb, var(--signal) 12%, var(--well));
+}
+
+.dt-row.is-sel:hover {
+  background: color-mix(in srgb, var(--signal) 18%, var(--well));
+}
+
+.dt-scroll:focus-visible .dt-row.is-cursor {
+  outline: 1px solid var(--signal);
+  outline-offset: -1px;
+}
+
+.dt-cell {
+  display: flex;
+  align-items: center;
+  flex: none;
+  min-width: 0;
+  padding: 0 6px;
+  overflow: hidden;
+  white-space: nowrap;
+  color: var(--bone);
+  border-right: 1px solid var(--edge-soft);
+  border-bottom: 1px solid var(--edge-soft);
+}
+
+.dt-cell.is-pin,
+.dt-th.dt-gutter,
+.dt-cell.dt-gutter {
+  position: sticky;
+  z-index: 1;
+  background: inherit;
+}
+
+.dt-cell.is-pin {
+  border-right-color: var(--edge);
+}
+
+.dt-cell > span,
+.dt-cell > button {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.dt-cell.is-num {
+  justify-content: flex-end;
+  font-variant-numeric: tabular-nums;
+}
+
+.dt-gutter {
+  left: 0;
+  justify-content: flex-end;
+  padding-right: var(--sp-2);
+  border-left: 2px solid transparent;
+  color: var(--faint);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+
+.dt-th.dt-gutter {
+  align-items: center;
+  justify-content: flex-end;
+  border-bottom: 0;
+}
+
+.dt-row.is-sel .dt-gutter {
+  border-left-color: var(--signal);
+  color: var(--signal);
+}
+
+.dt-pad {
+  flex: none;
+}
+
+.dt-empty {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--sp-6) var(--sp-4);
+}
+
+/* ---------------------------- cell values -------------------------- */
+
+.dt-numv {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Timestamps line up column-wise; the parsed form is in the cell title. */
+.dt-datev {
+  font-variant-numeric: tabular-nums;
+}
+
+.dt-null,
+.dt-void {
+  color: var(--faint);
+  font-style: italic;
+}
+
+.dt-bool {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 5px;
+  background: var(--rail);
+  border-radius: 999px;
+  color: var(--faint);
+  font-size: var(--fs-xs);
+  line-height: calc(15px * var(--ui-scale, 1));
+}
+
+.dt-bool.is-true {
+  background: color-mix(in srgb, var(--jade) 16%, transparent);
+  color: var(--jade);
+}
+
+.dt-ref {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 5px;
+  background: var(--violet-wash);
+  border: 1px solid color-mix(in srgb, var(--violet) 34%, transparent);
+  border-radius: 2px;
+  color: var(--violet);
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  line-height: calc(15px * var(--ui-scale, 1));
+  cursor: pointer;
+  transition: background var(--dur-1) var(--ease);
+}
+
+.dt-ref:hover {
+  background: color-mix(in srgb, var(--violet) 24%, transparent);
+}
+
+/* ---------------------------- row detail --------------------------- */
+
+.dt-drawer {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  width: min(380px, 40%);
+  min-height: 0;
+  background: var(--chassis);
+  border-left: 1px solid var(--edge);
+}
+
+.dt.is-narrow .dt-drawer {
+  width: auto;
+  max-height: 45%;
+  border-left: 0;
+  border-top: 1px solid var(--edge);
+}
+
+.dt-drawer-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  flex: none;
+  min-height: var(--h-bar);
+  padding: 0 var(--sp-1) 0 var(--sp-3);
+  background: var(--chassis-2);
+  border-bottom: 1px solid var(--edge);
+}
+
+.dt-drawer-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
+  padding: var(--sp-3);
+  overflow: auto;
+  color: var(--bone);
+  font-size: var(--fs-data);
+  line-height: var(--lh-data);
+  tab-size: 2;
+  white-space: pre;
+}
+
+/* ---------------------------- popovers ----------------------------- */
+
+.dt-pop {
+  position: fixed;
+  z-index: var(--z-menu);
+  display: flex;
+  flex-direction: column;
+  max-width: calc(100vw - 16px);
+  max-height: 70vh;
+  background: var(--chassis-2);
+  border: 1px solid var(--edge);
+  border-radius: var(--r-lg);
+  outline: none;
+}
+
+.dt-pop-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  flex: none;
+  padding: var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--edge-soft);
+}
+
+.dt-pop-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--sp-1) var(--sp-1) var(--sp-2);
+}
+
+.dt-pop-body.is-menu {
+  padding: var(--sp-1) 0;
+}
+
+.dt-pop-foot {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: none;
+  padding: var(--sp-2) var(--sp-3);
+  border-top: 1px solid var(--edge-soft);
+  color: var(--faint);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-ui);
+}
+
+.dt-pop-empty {
+  margin: 0;
+  padding: var(--sp-3);
+  color: var(--faint);
+  font-size: var(--fs-sm);
+}
+
+/* --- columns --- */
+
+.dt-colrow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 3px var(--sp-2);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background var(--dur-1) var(--ease);
+}
+
+.dt-colrow:hover,
+.dt-colrow:has(.checkbox:focus-visible) {
+  background: var(--rail);
+}
+
+/* The last column standing cannot be switched off; the row says so. */
+.dt-colrow:has(.checkbox:disabled) {
+  cursor: not-allowed;
+  color: var(--faint);
+}
+
+.dt-colrow:has(.checkbox:disabled) .dt-colname {
+  color: var(--mute);
+}
+
+.dt-colname {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--bone);
+  font-family: var(--font-data);
+  font-size: var(--fs-data);
+}
+
+.dt-colmeta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: none;
+}
+
+.dt-colpct {
+  min-width: 4ch;
+  text-align: right;
+  color: var(--faint);
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+/* An optional key is the interesting one: it is how a payload's shape
+   variation gets discovered at all. */
+.dt-colpct.is-partial {
+  color: var(--signal);
+}
+
+/* --- filter builder --- */
+
+.dt-frow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  flex-wrap: wrap;
+  padding: var(--sp-1) var(--sp-2);
+}
+
+.dt-frow .select,
+.dt-frow .input {
+  height: 26px;
+  line-height: 24px;
+  font-size: var(--fs-xs);
+}
+
+.dt-fcol {
+  flex: 1 1 120px;
+  min-width: 90px;
+}
+
+.dt-fop {
+  flex: 0 1 132px;
+  min-width: 92px;
+}
+
+.dt-fvals {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  flex: 1 1 150px;
+  min-width: 110px;
+}
+
+.dt-fv {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.dt-fand,
+.dt-fnone {
+  flex: none;
+  color: var(--faint);
+  font-size: var(--fs-xs);
+}
+
+.dt-fnone {
+  flex: 1 1 150px;
+  font-style: italic;
+}
+
+.dt-ferr {
+  flex: 1 1 100%;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding-top: 2px;
+  color: var(--rust);
+  font-size: var(--fs-xs);
+}
+
+/* ---------------------------------------------------------------- */
+/* Zoom modes                                                        */
+/*                                                                   */
+/* "Fill the window" lifts the table out of the response pane and     */
+/* lays it over the workbench, stopping short of the title and status */
+/* rails so the window controls stay reachable. "Full screen" is the  */
+/* browser's own element fullscreen - the F11 behaviour - and only    */
+/* needs its surface restated, since a fullscreen element has no      */
+/* background of its own.                                             */
+/* ---------------------------------------------------------------- */
+
+.dt.is-zoom-app {
+  position: fixed;
+  top: var(--h-titlebar);
+  right: 0;
+  bottom: var(--h-statusbar);
+  left: 0;
+  /* The base rule sets height:100%, which would win over the bottom offset
+     and push the table down over the status rail. */
+  height: auto;
+  z-index: var(--z-modal);
+  background: var(--well);
+  box-shadow: var(--shadow-modal);
+}
+
+.dt:fullscreen {
+  background: var(--well);
+  width: 100%;
+  height: 100%;
+}
+
+/* Chromium paints a black backdrop behind a fullscreen element. */
+.dt:fullscreen::backdrop {
+  background: var(--well);
+}
+
+/* ---------------------------------------------------------------- */
+/* Column types                                                      */
+/*                                                                   */
+/* The inferred type is the most useful thing in the header after the */
+/* name, so it is colour-coded to match how the same value is painted */
+/* in the JSON tree. Reading the two views side by side then uses one */
+/* vocabulary rather than two.                                        */
+/* ---------------------------------------------------------------- */
+
+.dt-th-type[data-type='num'] { color: var(--syn-number); }
+.dt-th-type[data-type='str'] { color: var(--syn-string); }
+.dt-th-type[data-type='boolean'] { color: var(--syn-bool); }
+.dt-th-type[data-type='date'] { color: var(--trace); }
+.dt-th-type[data-type='arr'],
+.dt-th-type[data-type='obj'] { color: var(--violet); }
+.dt-th-type[data-type='mixed'] { color: var(--amber-2); }
+.dt-th-type[data-type='null'] { color: var(--faint); }
+
+/* ---------------------------------------------------------------- */
+/* Overflow menu                                                     */
+/* ---------------------------------------------------------------- */
+
+/* A section label inside the options menu, distinct from a row you can click. */
+.dt-pop-label {
+  padding: var(--sp-2) var(--sp-3) var(--sp-1);
+  color: var(--faint);
+}
+
+/* Marks the overflow button when something inside it is non-default, so a
+   hidden column is discoverable without opening the menu. */
+.dt-dot {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--signal);
+}
+
+.dt-toolbar .btn-icon {
+  position: relative;
+}

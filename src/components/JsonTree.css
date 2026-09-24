@@ -1,0 +1,304 @@
+/* ------------------------------------------------------------------ */
+/* JsonTree: the collapsible response body.                            */
+/*                                                                     */
+/* A recessed well of fixed 20px rungs. The list is virtualised, so     */
+/* every row must be exactly --jt-row tall - nothing here may wrap,     */
+/* grow with its content, or the spacer maths goes out of register.     */
+/* ------------------------------------------------------------------ */
+
+.jsontree {
+  --jt-row: round(calc(20px * var(--ui-scale, 1)), 1px);
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  background: var(--well);
+}
+
+/* ---------------------------- toolbar ------------------------------ */
+
+/* Sits directly beneath the response toolbar, so it carries no surface or
+   rule of its own: two stacked bands of chrome above the data read as
+   clutter. The actions surface on hover; the row count always shows. */
+.jt-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  flex: none;
+  height: var(--h-row);
+  padding: 0 var(--sp-2);
+  overflow: hidden;
+  background: transparent;
+  opacity: 0.55;
+  transition: opacity var(--dur-2) var(--ease);
+}
+
+.jsontree:hover .jt-bar,
+.jsontree:focus-within .jt-bar {
+  opacity: 1;
+}
+
+.jt-bar-spacer {
+  flex: 1 1 auto;
+  min-width: var(--sp-2);
+}
+
+.jt-notice {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--amber-2);
+  font-size: var(--fs-xs);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* The refusal messages are long; the glyph must not be the part that shrinks. */
+.jt-notice .icon {
+  flex: none;
+}
+
+/* Beats .mono on the same element whatever order the sheets land in. */
+.jt-bar .jt-count {
+  flex: none;
+  padding-left: var(--sp-2);
+  color: var(--faint);
+  font-size: var(--fs-xs);
+}
+
+/* ---------------------------- scroller ----------------------------- */
+
+.jt-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  font-family: var(--font-data);
+  font-size: var(--fs-data);
+  line-height: var(--jt-row);
+  outline: none;
+}
+
+.jt-scroll:focus-visible {
+  outline: var(--ring-w) solid var(--signal);
+  outline-offset: -2px;
+}
+
+/* The off-screen rows above and below the rendered slice. */
+.jt-pad {
+  flex: none;
+}
+
+/* ---------------------------- rows --------------------------------- */
+
+.jt-row {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  min-width: 100%;
+  height: var(--jt-row);
+  /* Reserved so the cursor rung never shifts the row it lands on. */
+  border-left: 2px solid transparent;
+  white-space: pre;
+  user-select: text;
+  transition: background var(--dur-1) var(--ease);
+}
+
+.jt-row:hover {
+  background: var(--chassis);
+}
+
+.jt-row.is-cursor {
+  background: var(--rail);
+  border-left-color: var(--signal);
+}
+
+/* One hairline per depth step, drawn behind the row. */
+.jt-indent {
+  flex: none;
+  align-self: stretch;
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0 5px,
+    var(--edge-soft) 5px 6px,
+    transparent 6px 12px
+  );
+}
+
+.jt-caret {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 14px;
+  height: var(--jt-row);
+  color: var(--faint);
+  cursor: pointer;
+  user-select: none;
+}
+
+.jt-row:hover .jt-caret {
+  color: var(--mute);
+}
+
+.jt-caret.is-empty {
+  cursor: default;
+}
+
+.jt-key {
+  flex: none;
+  color: var(--syn-key);
+  cursor: pointer;
+  user-select: none;
+}
+
+.jt-key.is-index {
+  color: var(--faint);
+}
+
+.jt-key.is-root {
+  color: var(--faint);
+  cursor: pointer;
+}
+
+.jt-colon {
+  flex: none;
+  margin: 0 5px 0 1px;
+  color: var(--syn-punct);
+  user-select: none;
+}
+
+/* ---------------------------- values ------------------------------- */
+
+.jt-v {
+  flex: none;
+  min-width: 0;
+}
+
+.jt-v.is-string {
+  color: var(--syn-string);
+}
+
+.jt-v.is-number {
+  color: var(--syn-number);
+}
+
+.jt-v.is-bool {
+  color: var(--syn-bool);
+}
+
+.jt-v.is-null {
+  color: var(--syn-null);
+}
+
+.jt-v.is-punct {
+  color: var(--syn-punct);
+}
+
+/* undefined, NaN, Infinity: legal in a lenient parse, not in JSON. */
+.jt-v.is-invalid {
+  color: var(--syn-invalid);
+}
+
+.jt-preview {
+  margin-left: 6px;
+  color: var(--faint);
+}
+
+.jt-mark {
+  background: var(--signal-wash);
+  border-radius: 2px;
+  color: inherit;
+}
+
+/* Inline affordance: the rest of a clipped string, or the rest of a
+   container that was cut off at its display limit. */
+.jt-inline {
+  flex: none;
+  margin-left: 6px;
+  padding: 0 5px;
+  background: var(--signal-wash);
+  border-radius: 2px;
+  color: var(--signal);
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  line-height: calc(var(--jt-row) - 6px);
+  white-space: nowrap;
+  transition: background var(--dur-1) var(--ease);
+}
+
+.jt-inline:hover {
+  background: var(--signal-wash-2);
+}
+
+.jt-inline:focus-visible {
+  outline: var(--ring-w) solid var(--signal);
+  outline-offset: -1px;
+}
+
+.jt-row.is-more .jt-inline {
+  margin-left: 14px;
+}
+
+.jt-hidden {
+  margin-left: var(--sp-2);
+  color: var(--faint);
+  font-size: var(--fs-xs);
+}
+
+/* ---------------------------- row actions -------------------------- */
+
+/* Pinned to the right of the viewport, not the row, so they stay
+   reachable when a long value scrolls the row sideways. */
+.jt-actions {
+  position: sticky;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  flex: none;
+  margin-left: auto;
+  padding: 0 var(--sp-1) 0 var(--sp-4);
+  background: inherit;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-1) var(--ease);
+}
+
+.jt-row:hover .jt-actions,
+.jt-row.is-cursor .jt-actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.jt-act {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--r-sm);
+  color: var(--faint);
+  transition:
+    background var(--dur-1) var(--ease),
+    color var(--dur-1) var(--ease);
+}
+
+.jt-act:hover {
+  background: var(--rail-hi);
+  color: var(--bone);
+}
+
+.jt-act:focus-visible {
+  outline: var(--ring-w) solid var(--signal);
+  outline-offset: -1px;
+}
+
+/* ---------------------------- empty -------------------------------- */
+
+.jt-empty {
+  flex: 1 1 auto;
+}
